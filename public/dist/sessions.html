@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Sesi Permainan | Gamifikasi Literasi Keuangan</title>
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="Sesi Permainan | Gamifikasi Literasi Keuangan" />
+    <meta name="author" content="Admin Gamifikasi" />
+    <meta
+      name="description"
+      content="Manajemen dan monitoring sesi permainan gamifikasi literasi keuangan"
+    />
+    <!--end::Primary Meta Tags-->
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
+    />
+    <!--end::Fonts-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="./css/adminlte.css" />
+    <!--end::Required Plugin(AdminLTE)-->
+    <style>
+      .session-status-active { color: #28a745; }
+      .session-status-completed { color: #007bff; }
+      .session-status-error { color: #dc3545; }
+      .turn-indicator { 
+        width: 12px; 
+        height: 12px; 
+        border-radius: 50%; 
+        display: inline-block; 
+        margin-right: 5px;
+      }
+      .turn-active { background-color: #28a745; }
+      .turn-waiting { background-color: #ffc107; }
+      .turn-completed { background-color: #6c757d; }
+    </style>
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body">
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block"><a href="./index.html" class="nav-link">Dashboard</a></li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Laporan</a></li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::Live Sessions Indicator-->
+            <li class="nav-item">
+              <a class="nav-link" href="#" onclick="refreshLiveSessions()">
+                <i class="bi bi-broadcast text-success"></i>
+                <span class="navbar-badge badge text-bg-success" id="liveSessionsCount">7</span>
+              </a>
+            </li>
+            <!--end::Live Sessions Indicator-->
+            <!--begin::Fullscreen Toggle-->
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+                <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+                <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+              </a>
+            </li>
+            <!--end::Fullscreen Toggle-->
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img
+                  src="./assets/img/user2-160x160.jpg"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline">Admin Gamifikasi</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <li class="user-header text-bg-primary">
+                  <img
+                    src="./assets/img/user2-160x160.jpg"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Admin Gamifikasi - System Administrator
+                    <small>Login terakhir: 10 Nov 2025</small>
+                  </p>
+                </li>
+                <li class="user-body">
+                  <div class="row">
+                    <div class="col-4 text-center"><a href="#">Pemain</a></div>
+                    <div class="col-4 text-center"><a href="#">Laporan</a></div>
+                    <div class="col-4 text-center"><a href="#">Analisis</a></div>
+                  </div>
+                </li>
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                </li>
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand">
+          <a href="./index.html" class="brand-link">
+            <img
+              src="./assets/img/AdminLTELogo.png"
+              alt="Gamifikasi Logo"
+              class="brand-image opacity-75 shadow"
+            />
+            <span class="brand-text fw-light">Literasi Keuangan</span>
+          </a>
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+            >
+              <li class="nav-item">
+                <a href="./index.html" class="nav-link">
+                  <i class="nav-icon bi bi-speedometer"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./players.html" class="nav-link">
+                  <i class="nav-icon bi bi-people-fill"></i>
+                  <p>Manajemen Pemain</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./sessions.html" class="nav-link active">
+                  <i class="nav-icon bi bi-controller"></i>
+                  <p>Sesi Permainan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./game-content.html" class="nav-link">
+                  <i class="nav-icon bi bi-joystick"></i>
+                  <p>Manajemen Game</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-bar-chart-fill"></i>
+                  <p>
+                    Laporan & Analisis
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Laporan Skor</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Analisis Performa</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Export Data</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-gear-fill"></i>
+                  <p>
+                    Pengaturan
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Pengaturan Umum</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./config-game.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Konfigurasi Game</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Manajemen User</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-header">BANTUAN</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-question-circle-fill"></i>
+                  <p>FAQ</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-book"></i>
+                  <p>Panduan Penggunaan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-box-arrow-right"></i>
+                  <p>Logout</p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0">Sesi Permainan</h3>
+                <p class="text-muted">Monitoring dan pengelolaan sesi permainan aktif</p>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="./index.html">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Sesi Permainan</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+            
+            <!--begin::Session Statistics-->
+            <div class="row">
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-success">
+                  <div class="inner">
+                    <h3 id="activeSessionsCount">7</h3>
+                    <p>Sesi Aktif</p>
+                  </div>
+                  <i class="small-box-icon bi bi-play-circle-fill"></i>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-primary">
+                  <div class="inner">
+                    <h3 id="completedSessionsCount">143</h3>
+                    <p>Sesi Selesai</p>
+                  </div>
+                  <i class="small-box-icon bi bi-check-circle-fill"></i>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-warning">
+                  <div class="inner">
+                    <h3 id="averageSessionDuration">18m</h3>
+                    <p>Rata-rata Durasi</p>
+                  </div>
+                  <i class="small-box-icon bi bi-clock-fill"></i>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-danger">
+                  <div class="inner">
+                    <h3 id="errorSessionsCount">2</h3>
+                    <p>Sesi Error</p>
+                  </div>
+                  <i class="small-box-icon bi bi-exclamation-triangle-fill"></i>
+                </div>
+              </div>
+            </div>
+            <!--end::Session Statistics-->
+
+            <!--begin::Filter Sessions (ADM-17)-->
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-funnel me-2"></i>Filter Sesi</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Status Sesi</label>
+                          <select class="form-control" id="sessionStatusFilter">
+                            <option value="">Semua Status</option>
+                            <option value="active">Aktif</option>
+                            <option value="completed">Selesai</option>
+                            <option value="error">Error</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Kategori</label>
+                          <select class="form-control" id="sessionCategoryFilter">
+                            <option value="">Semua Kategori</option>
+                            <option value="budgeting">Budgeting</option>
+                            <option value="saving">Saving</option>
+                            <option value="investment">Investment</option>
+                            <option value="debt">Debt Management</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Tanggal Mulai</label>
+                          <input type="date" class="form-control" id="sessionStartDate">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>ID Sesi</label>
+                          <input type="text" class="form-control" id="sessionIdFilter" placeholder="Cari ID sesi">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-12">
+                        <button type="button" class="btn btn-primary me-2" onclick="applySessionFilters()">
+                          <i class="bi bi-search me-1"></i>Filter
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetSessionFilters()">
+                          <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Filter Sessions-->
+
+            <!--begin::Sessions List (ADM-13)-->
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-list me-2"></i>Daftar Sesi Permainan</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-success btn-sm me-2" onclick="autoRefreshToggle()">
+                        <i class="bi bi-arrow-clockwise me-1"></i><span id="autoRefreshText">Auto Refresh: OFF</span>
+                      </button>
+                      <button type="button" class="btn btn-primary btn-sm" onclick="refreshSessionsList()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover" id="sessionsTable">
+                        <thead>
+                          <tr>
+                            <th>ID Sesi</th>
+                            <th>Pemain</th>
+                            <th>Kategori</th>
+                            <th>Status</th>
+                            <th>Durasi</th>
+                            <th>Giliran</th>
+                            <th>Pemenang</th>
+                            <th>Dimulai</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="sessionsTableBody">
+                          <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Sessions Pagination">
+                      <ul class="pagination justify-content-center" id="sessionsPagination">
+                        <!-- Pagination will be populated by JavaScript -->
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Sessions List-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer">
+        <div class="float-end d-none d-sm-inline">v2.1.3</div>
+        <strong>
+          Copyright &copy; 2025&nbsp;
+          <a href="#" class="text-decoration-none">Gamifikasi Literasi Keuangan</a>.
+        </strong>
+        Sistem Admin Dashboard.
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <!--begin::Session Detail Modal (ADM-14)-->
+    <div class="modal fade" id="sessionDetailModal" tabindex="-1" aria-labelledby="sessionDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sessionDetailModalLabel">Detail Sesi Permainan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Informasi Sesi</h6>
+                <table class="table table-sm">
+                  <tr><td><strong>ID Sesi:</strong></td><td id="modalSessionId">-</td></tr>
+                  <tr><td><strong>Kategori:</strong></td><td id="modalSessionCategory">-</td></tr>
+                  <tr><td><strong>Status:</strong></td><td id="modalSessionStatus">-</td></tr>
+                  <tr><td><strong>Durasi:</strong></td><td id="modalSessionDuration">-</td></tr>
+                  <tr><td><strong>Dimulai:</strong></td><td id="modalSessionStarted">-</td></tr>
+                  <tr><td><strong>Pemenang:</strong></td><td id="modalSessionWinner">-</td></tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h6>Status Giliran (ADM-16)</h6>
+                <div class="mb-3">
+                  <div class="d-flex align-items-center mb-2">
+                    <span class="badge bg-info me-2">Turn Index: <span id="modalTurnIndex">0</span></span>
+                    <span class="badge bg-secondary">Round: <span id="modalRound">1</span></span>
+                  </div>
+                </div>
+                <div id="playersQueue">
+                  <!-- Players queue will be populated here -->
+                </div>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <h6>Pemain dalam Sesi</h6>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Nama</th>
+                    <th>Skor</th>
+                    <th>Posisi</th>
+                    <th>Status</th>
+                    <th>Last Action</th>
+                  </tr>
+                </thead>
+                <tbody id="modalPlayersTable">
+                  <!-- Players data will be populated here -->
+                </tbody>
+              </table>
+            </div>
+            
+            <hr>
+            
+            <h6>Log Aktivitas</h6>
+            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Pemain</th>
+                    <th>Aksi</th>
+                    <th>Detail</th>
+                  </tr>
+                </thead>
+                <tbody id="modalActivityLog">
+                  <!-- Activity log will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" onclick="endSession()" id="endSessionBtn">
+              <i class="bi bi-stop-circle me-1"></i>Akhiri Sesi
+            </button>
+            <button type="button" class="btn btn-warning" onclick="restartSession()" id="restartSessionBtn">
+              <i class="bi bi-arrow-clockwise me-1"></i>Restart
+            </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end::Session Detail Modal-->
+
+    <!--begin::Script-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/adminlte.js"></script>
+
+    <!-- Sessions Management Script -->
+    <script>
+      // Mock data untuk sesi permainan
+      let sessionsData = [
+        {
+          id: "GS-2025-001",
+          players: ["Ahmad Fauzi", "Siti Nurhaliza", "Budi Santoso"],
+          category: "budgeting",
+          status: "active",
+          duration: "15m 32s",
+          turnIndex: 1,
+          round: 2,
+          winner: null,
+          startedAt: "2025-11-10T14:30:00",
+          playersData: [
+            { name: "Ahmad Fauzi", score: 85, position: 1, status: "active", lastAction: "Answer question" },
+            { name: "Siti Nurhaliza", score: 78, position: 2, status: "waiting", lastAction: "Waiting turn" },
+            { name: "Budi Santoso", score: 72, position: 3, status: "waiting", lastAction: "Drew card" }
+          ],
+          activityLog: [
+            { time: "14:45", player: "Ahmad Fauzi", action: "Answer", detail: "Correct answer (+10 points)" },
+            { time: "14:44", player: "Siti Nurhaliza", action: "Draw", detail: "Risk card drawn" },
+            { time: "14:43", player: "Budi Santoso", action: "Move", detail: "Moved 3 spaces" }
+          ]
+        },
+        {
+          id: "GS-2025-002",
+          players: ["Rina Wijaya", "Doni Pratama"],
+          category: "saving",
+          status: "active",
+          duration: "8m 15s",
+          turnIndex: 0,
+          round: 1,
+          winner: null,
+          startedAt: "2025-11-10T14:45:00",
+          playersData: [
+            { name: "Rina Wijaya", score: 45, position: 1, status: "active", lastAction: "Roll dice" },
+            { name: "Doni Pratama", score: 38, position: 2, status: "waiting", lastAction: "Waiting turn" }
+          ],
+          activityLog: [
+            { time: "14:50", player: "Rina Wijaya", action: "Roll", detail: "Rolled 4" },
+            { time: "14:49", player: "Doni Pratama", action: "Answer", detail: "Wrong answer (-5 points)" }
+          ]
+        },
+        {
+          id: "GS-2025-003",
+          players: ["Lisa Chen", "Michael Wong", "Sarah Kim", "John Smith"],
+          category: "investment",
+          status: "completed",
+          duration: "22m 48s",
+          turnIndex: -1,
+          round: 5,
+          winner: "Lisa Chen",
+          startedAt: "2025-11-10T13:30:00",
+          playersData: [
+            { name: "Lisa Chen", score: 100, position: 1, status: "winner", lastAction: "Reached finish" },
+            { name: "Michael Wong", score: 87, position: 2, status: "completed", lastAction: "Game ended" },
+            { name: "Sarah Kim", score: 83, position: 3, status: "completed", lastAction: "Game ended" },
+            { name: "John Smith", score: 76, position: 4, status: "completed", lastAction: "Game ended" }
+          ],
+          activityLog: [
+            { time: "13:52", player: "Lisa Chen", action: "Win", detail: "Reached 100 points - Winner!" },
+            { time: "13:51", player: "Michael Wong", action: "Answer", detail: "Correct answer (+8 points)" }
+          ]
+        },
+        {
+          id: "GS-2025-004",
+          players: ["Error Player"],
+          category: "debt",
+          status: "error",
+          duration: "5m 12s",
+          turnIndex: 0,
+          round: 1,
+          winner: null,
+          startedAt: "2025-11-10T14:20:00",
+          playersData: [
+            { name: "Error Player", score: 0, position: 1, status: "disconnected", lastAction: "Connection lost" }
+          ],
+          activityLog: [
+            { time: "14:25", player: "System", action: "Error", detail: "Player disconnected unexpectedly" },
+            { time: "14:22", player: "Error Player", action: "Join", detail: "Joined game" }
+          ]
+        }
+      ];
+
+      let currentPage = 1;
+      let itemsPerPage = 10;
+      let filteredSessions = [...sessionsData];
+      let selectedSession = null;
+      let autoRefreshEnabled = false;
+      let autoRefreshInterval = null;
+
+      // ADM-13: Lihat daftar sesi
+      function loadSessionsList() {
+        const tbody = document.getElementById('sessionsTableBody');
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const sessionsToShow = filteredSessions.slice(startIndex, endIndex);
+
+        tbody.innerHTML = '';
+
+        sessionsToShow.forEach(session => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><span class="badge bg-primary">${session.id}</span></td>
+            <td>
+              <div class="d-flex flex-wrap">
+                ${session.players.slice(0, 2).map(player => 
+                  `<span class="badge bg-secondary me-1 mb-1">${player}</span>`
+                ).join('')}
+                ${session.players.length > 2 ? `<span class="badge bg-light text-dark">+${session.players.length - 2}</span>` : ''}
+              </div>
+            </td>
+            <td><span class="badge bg-info">${getCategoryText(session.category)}</span></td>
+            <td><span class="badge bg-${getStatusColor(session.status)}">${getStatusText(session.status)}</span></td>
+            <td>${session.duration}</td>
+            <td>
+              ${session.status === 'active' ? 
+                `<div class="d-flex align-items-center">
+                  <span class="turn-indicator turn-active"></span>
+                  <small>Turn ${session.turnIndex + 1}/${session.players.length}</small>
+                </div>` 
+                : '-'
+              }
+            </td>
+            <td>${session.winner || '-'}</td>
+            <td>${formatDateTime(session.startedAt)}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" onclick="viewSessionDetail('${session.id}')" title="Detail">
+                <i class="bi bi-eye"></i>
+              </button>
+              ${session.status === 'active' ? 
+                `<button class="btn btn-sm btn-outline-danger" onclick="confirmEndSession('${session.id}')" title="Akhiri">
+                  <i class="bi bi-stop-circle"></i>
+                </button>` 
+                : ''
+              }
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        updatePagination();
+        updateStatistics();
+      }
+
+      // ADM-14: Detail sesi permainan
+      function viewSessionDetail(sessionId) {
+        selectedSession = sessionsData.find(s => s.id === sessionId);
+        if (!selectedSession) return;
+
+        // Populate basic session info
+        document.getElementById('modalSessionId').textContent = selectedSession.id;
+        document.getElementById('modalSessionCategory').innerHTML = 
+          `<span class="badge bg-info">${getCategoryText(selectedSession.category)}</span>`;
+        document.getElementById('modalSessionStatus').innerHTML = 
+          `<span class="badge bg-${getStatusColor(selectedSession.status)}">${getStatusText(selectedSession.status)}</span>`;
+        document.getElementById('modalSessionDuration').textContent = selectedSession.duration;
+        document.getElementById('modalSessionStarted').textContent = formatDateTime(selectedSession.startedAt);
+        document.getElementById('modalSessionWinner').textContent = selectedSession.winner || '-';
+
+        // ADM-16: Lihat status giliran
+        document.getElementById('modalTurnIndex').textContent = selectedSession.turnIndex >= 0 ? selectedSession.turnIndex + 1 : '-';
+        document.getElementById('modalRound').textContent = selectedSession.round;
+
+        // Players queue visualization
+        const playersQueue = document.getElementById('playersQueue');
+        playersQueue.innerHTML = '';
+        if (selectedSession.status === 'active') {
+          selectedSession.players.forEach((player, index) => {
+            const isActive = index === selectedSession.turnIndex;
+            const queueItem = document.createElement('div');
+            queueItem.className = `d-flex align-items-center mb-2 p-2 rounded ${isActive ? 'bg-success text-white' : 'bg-light'}`;
+            queueItem.innerHTML = `
+              <span class="turn-indicator ${isActive ? 'turn-active' : 'turn-waiting'}"></span>
+              <span>${player}</span>
+              ${isActive ? '<small class="ms-auto">Giliran Aktif</small>' : ''}
+            `;
+            playersQueue.appendChild(queueItem);
+          });
+        }
+
+        // Players data table
+        const playersTable = document.getElementById('modalPlayersTable');
+        playersTable.innerHTML = '';
+        selectedSession.playersData.forEach(player => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${player.name}</td>
+            <td><span class="badge bg-primary">${player.score}</span></td>
+            <td><span class="badge bg-warning">#${player.position}</span></td>
+            <td><span class="badge bg-${getPlayerStatusColor(player.status)}">${getPlayerStatusText(player.status)}</span></td>
+            <td><small>${player.lastAction}</small></td>
+          `;
+          playersTable.appendChild(row);
+        });
+
+        // Activity log
+        const activityLog = document.getElementById('modalActivityLog');
+        activityLog.innerHTML = '';
+        selectedSession.activityLog.forEach(log => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><small>${log.time}</small></td>
+            <td><small>${log.player}</small></td>
+            <td><small>${log.action}</small></td>
+            <td><small>${log.detail}</small></td>
+          `;
+          activityLog.appendChild(row);
+        });
+
+        // Show/hide action buttons based on status
+        const endBtn = document.getElementById('endSessionBtn');
+        const restartBtn = document.getElementById('restartSessionBtn');
+        
+        if (selectedSession.status === 'active') {
+          endBtn.style.display = 'inline-block';
+          restartBtn.style.display = 'inline-block';
+        } else {
+          endBtn.style.display = 'none';
+          restartBtn.style.display = selectedSession.status === 'error' ? 'inline-block' : 'none';
+        }
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('sessionDetailModal'));
+        modal.show();
+      }
+
+      // ADM-15: Akhiri sesi permainan
+      function confirmEndSession(sessionId) {
+        selectedSession = sessionsData.find(s => s.id === sessionId);
+        if (!selectedSession) return;
+        
+        if (confirm(`Apakah Anda yakin ingin mengakhiri sesi ${sessionId}?`)) {
+          endSession();
+        }
+      }
+
+      function endSession() {
+        if (!selectedSession) return;
+        
+        // Simulate API call to end session
+        selectedSession.status = 'completed';
+        selectedSession.winner = selectedSession.playersData[0].name; // Winner is player with highest score
+        
+        // Close modal if open
+        const modal = bootstrap.Modal.getInstance(document.getElementById('sessionDetailModal'));
+        if (modal) modal.hide();
+        
+        loadSessionsList();
+        showToast(`Sesi ${selectedSession.id} telah diakhiri`, 'success');
+      }
+
+      function restartSession() {
+        if (!selectedSession) return;
+        
+        if (confirm(`Apakah Anda yakin ingin me-restart sesi ${selectedSession.id}?`)) {
+          // Simulate restart
+          selectedSession.status = 'active';
+          selectedSession.turnIndex = 0;
+          selectedSession.round = 1;
+          selectedSession.winner = null;
+          
+          // Reset players data
+          selectedSession.playersData.forEach((player, index) => {
+            player.score = 0;
+            player.position = index + 1;
+            player.status = index === 0 ? 'active' : 'waiting';
+            player.lastAction = 'Game restarted';
+          });
+
+          const modal = bootstrap.Modal.getInstance(document.getElementById('sessionDetailModal'));
+          if (modal) modal.hide();
+          
+          loadSessionsList();
+          showToast(`Sesi ${selectedSession.id} telah di-restart`, 'info');
+        }
+      }
+
+      // ADM-17: Filter sesi
+      function applySessionFilters() {
+        const statusFilter = document.getElementById('sessionStatusFilter').value;
+        const categoryFilter = document.getElementById('sessionCategoryFilter').value;
+        const startDate = document.getElementById('sessionStartDate').value;
+        const sessionId = document.getElementById('sessionIdFilter').value.toLowerCase();
+
+        filteredSessions = sessionsData.filter(session => {
+          const statusMatch = !statusFilter || session.status === statusFilter;
+          const categoryMatch = !categoryFilter || session.category === categoryFilter;
+          const dateMatch = !startDate || session.startedAt.startsWith(startDate);
+          const idMatch = !sessionId || session.id.toLowerCase().includes(sessionId);
+          
+          return statusMatch && categoryMatch && dateMatch && idMatch;
+        });
+
+        currentPage = 1;
+        loadSessionsList();
+        showToast(`Ditemukan ${filteredSessions.length} sesi`, 'info');
+      }
+
+      function resetSessionFilters() {
+        document.getElementById('sessionStatusFilter').value = '';
+        document.getElementById('sessionCategoryFilter').value = '';
+        document.getElementById('sessionStartDate').value = '';
+        document.getElementById('sessionIdFilter').value = '';
+        
+        filteredSessions = [...sessionsData];
+        currentPage = 1;
+        loadSessionsList();
+      }
+
+      function refreshSessionsList() {
+        // Simulate API call
+        showToast('Data sesi telah diperbarui', 'success');
+        loadSessionsList();
+      }
+
+      function refreshLiveSessions() {
+        const activeSessions = sessionsData.filter(s => s.status === 'active').length;
+        document.getElementById('liveSessionsCount').textContent = activeSessions;
+        showToast(`${activeSessions} sesi aktif saat ini`, 'info');
+      }
+
+      function autoRefreshToggle() {
+        autoRefreshEnabled = !autoRefreshEnabled;
+        const button = document.getElementById('autoRefreshText');
+        
+        if (autoRefreshEnabled) {
+          button.textContent = 'Auto Refresh: ON';
+          autoRefreshInterval = setInterval(() => {
+            refreshSessionsList();
+            refreshLiveSessions();
+          }, 10000); // Refresh every 10 seconds
+          showToast('Auto refresh diaktifkan (10 detik)', 'success');
+        } else {
+          button.textContent = 'Auto Refresh: OFF';
+          if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+          }
+          showToast('Auto refresh dinonaktifkan', 'info');
+        }
+      }
+
+      function updateStatistics() {
+        const activeCount = sessionsData.filter(s => s.status === 'active').length;
+        const completedCount = sessionsData.filter(s => s.status === 'completed').length;
+        const errorCount = sessionsData.filter(s => s.status === 'error').length;
+        
+        // Calculate average duration (simplified)
+        const avgDuration = '18m'; // This would be calculated from actual data
+        
+        document.getElementById('activeSessionsCount').textContent = activeCount;
+        document.getElementById('completedSessionsCount').textContent = completedCount;
+        document.getElementById('errorSessionsCount').textContent = errorCount;
+        document.getElementById('averageSessionDuration').textContent = avgDuration;
+        document.getElementById('liveSessionsCount').textContent = activeCount;
+      }
+
+      function updatePagination() {
+        const totalPages = Math.ceil(filteredSessions.length / itemsPerPage);
+        const pagination = document.getElementById('sessionsPagination');
+        
+        pagination.innerHTML = '';
+        
+        // Previous button
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
+        pagination.appendChild(prevLi);
+        
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+          li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+          pagination.appendChild(li);
+        }
+        
+        // Next button
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
+        pagination.appendChild(nextLi);
+      }
+
+      function changePage(page) {
+        const totalPages = Math.ceil(filteredSessions.length / itemsPerPage);
+        if (page >= 1 && page <= totalPages) {
+          currentPage = page;
+          loadSessionsList();
+        }
+      }
+
+      // Utility functions
+      function formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('id-ID');
+      }
+
+      function getCategoryText(category) {
+        const categories = {
+          'budgeting': 'Budgeting',
+          'saving': 'Saving',
+          'investment': 'Investment',
+          'debt': 'Debt Management'
+        };
+        return categories[category] || category;
+      }
+
+      function getStatusColor(status) {
+        switch (status) {
+          case 'active': return 'success';
+          case 'completed': return 'primary';
+          case 'error': return 'danger';
+          default: return 'secondary';
+        }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case 'active': return 'Aktif';
+          case 'completed': return 'Selesai';
+          case 'error': return 'Error';
+          default: return 'Unknown';
+        }
+      }
+
+      function getPlayerStatusColor(status) {
+        switch (status) {
+          case 'active': return 'success';
+          case 'waiting': return 'warning';
+          case 'completed': return 'primary';
+          case 'disconnected': return 'danger';
+          case 'winner': return 'success';
+          default: return 'secondary';
+        }
+      }
+
+      function getPlayerStatusText(status) {
+        switch (status) {
+          case 'active': return 'Aktif';
+          case 'waiting': return 'Menunggu';
+          case 'completed': return 'Selesai';
+          case 'disconnected': return 'Terputus';
+          case 'winner': return 'Pemenang';
+          default: return 'Unknown';
+        }
+      }
+
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'danger' ? 'danger' : 'primary'} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="bi bi-info-circle me-2"></i>${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        `;
+        
+        document.body.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+          document.body.removeChild(toast);
+        });
+      }
+
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', function() {
+        loadSessionsList();
+        
+        // OverlayScrollbars configuration
+        const sidebarWrapper = document.querySelector('.sidebar-wrapper');
+        if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
+          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+            scrollbars: {
+              theme: 'os-theme-light',
+              autoHide: 'leave',
+              clickScroll: true,
+            },
+          });
+        }
+      });
+
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', function() {
+        if (autoRefreshInterval) {
+          clearInterval(autoRefreshInterval);
+        }
+      });
+    </script>
+    <!--end::Script-->
+  </body>
+</html>

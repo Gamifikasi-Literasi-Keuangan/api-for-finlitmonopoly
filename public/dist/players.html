@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Manajemen Pemain | Gamifikasi Literasi Keuangan</title>
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="Manajemen Pemain | Gamifikasi Literasi Keuangan" />
+    <meta name="author" content="Admin Gamifikasi" />
+    <meta
+      name="description"
+      content="Manajemen dan monitoring pemain sistem gamifikasi literasi keuangan"
+    />
+    <!--end::Primary Meta Tags-->
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
+    />
+    <!--end::Fonts-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="./css/adminlte.css" />
+    <!--end::Required Plugin(AdminLTE)-->
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body">
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block"><a href="./index.html" class="nav-link">Dashboard</a></li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Laporan</a></li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::Fullscreen Toggle-->
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+                <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+                <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+              </a>
+            </li>
+            <!--end::Fullscreen Toggle-->
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img
+                  src="./assets/img/user2-160x160.jpg"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline">Admin Gamifikasi</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <li class="user-header text-bg-primary">
+                  <img
+                    src="./assets/img/user2-160x160.jpg"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Admin Gamifikasi - System Administrator
+                    <small>Login terakhir: 10 Nov 2025</small>
+                  </p>
+                </li>
+                <li class="user-body">
+                  <div class="row">
+                    <div class="col-4 text-center"><a href="#">Pemain</a></div>
+                    <div class="col-4 text-center"><a href="#">Laporan</a></div>
+                    <div class="col-4 text-center"><a href="#">Analisis</a></div>
+                  </div>
+                </li>
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                </li>
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand">
+          <a href="./index.html" class="brand-link">
+            <img
+              src="./assets/img/AdminLTELogo.png"
+              alt="Gamifikasi Logo"
+              class="brand-image opacity-75 shadow"
+            />
+            <span class="brand-text fw-light">Literasi Keuangan</span>
+          </a>
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+            >
+              <li class="nav-item">
+                <a href="./index.html" class="nav-link">
+                  <i class="nav-icon bi bi-speedometer"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./players.html" class="nav-link active">
+                  <i class="nav-icon bi bi-people-fill"></i>
+                  <p>Manajemen Pemain</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./sessions.html" class="nav-link">
+                  <i class="nav-icon bi bi-controller"></i>
+                  <p>Sesi Permainan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./game-content.html" class="nav-link">
+                  <i class="nav-icon bi bi-joystick"></i>
+                  <p>Manajemen Game</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-bar-chart-fill"></i>
+                  <p>
+                    Laporan & Analisis
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Laporan Skor</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Analisis Performa</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Export Data</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-gear-fill"></i>
+                  <p>
+                    Pengaturan
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Pengaturan Umum</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./config-game.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Konfigurasi Game</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Manajemen User</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-header">BANTUAN</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-question-circle-fill"></i>
+                  <p>FAQ</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-book"></i>
+                  <p>Panduan Penggunaan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-box-arrow-right"></i>
+                  <p>Logout</p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0">Manajemen Pemain</h3>
+                <p class="text-muted">Monitoring dan pengelolaan data pemain</p>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="./index.html">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Manajemen Pemain</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+            
+            <!--begin::Player Statistics (ADM-12)-->
+            <div class="row">
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-primary">
+                  <div class="inner">
+                    <h3 id="totalPlayersCount">1,247</h3>
+                    <p>Total Pemain</p>
+                  </div>
+                  <i class="small-box-icon bi bi-people-fill"></i>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-success">
+                  <div class="inner">
+                    <h3 id="activePlayersCount">856</h3>
+                    <p>Pemain Aktif</p>
+                  </div>
+                  <i class="small-box-icon bi bi-person-check-fill"></i>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-warning">
+                  <div class="inner">
+                    <h3 id="averagePlayerScore">87.5</h3>
+                    <p>Rata-rata Skor</p>
+                  </div>
+                  <i class="small-box-icon bi bi-trophy-fill"></i>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-info">
+                  <div class="inner">
+                    <h3 id="totalGamesPlayed">12,456</h3>
+                    <p>Total Game Dimainkan</p>
+                  </div>
+                  <i class="small-box-icon bi bi-controller"></i>
+                </div>
+              </div>
+            </div>
+            <!--end::Player Statistics-->
+
+            <!--begin::Search & Filter (ADM-11)-->
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-funnel me-2"></i>Cari & Filter Pemain</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Cari Nama</label>
+                          <input type="text" class="form-control" id="searchName" placeholder="Masukkan nama pemain">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Skor Minimum</label>
+                          <input type="number" class="form-control" id="minScore" placeholder="0">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Skor Maksimum</label>
+                          <input type="number" class="form-control" id="maxScore" placeholder="100">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Status</label>
+                          <select class="form-control" id="statusFilter">
+                            <option value="">Semua Status</option>
+                            <option value="active">Aktif</option>
+                            <option value="inactive">Tidak Aktif</option>
+                            <option value="banned">Dinonaktifkan</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Tanggal Bergabung</label>
+                          <input type="date" class="form-control" id="joinDate">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-12">
+                        <button type="button" class="btn btn-primary me-2" onclick="applyPlayerFilters()">
+                          <i class="bi bi-search me-1"></i>Cari
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetPlayerFilters()">
+                          <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Search & Filter-->
+
+            <!--begin::Players List (ADM-08)-->
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-list me-2"></i>Daftar Pemain</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-primary btn-sm" onclick="refreshPlayersList()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover" id="playersTable">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Skor</th>
+                            <th>Posisi</th>
+                            <th>Game Dimainkan</th>
+                            <th>Bergabung</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="playersTableBody">
+                          <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Players Pagination">
+                      <ul class="pagination justify-content-center" id="playersPagination">
+                        <!-- Pagination will be populated by JavaScript -->
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Players List-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer">
+        <div class="float-end d-none d-sm-inline">v2.1.3</div>
+        <strong>
+          Copyright &copy; 2025&nbsp;
+          <a href="#" class="text-decoration-none">Gamifikasi Literasi Keuangan</a>.
+        </strong>
+        Sistem Admin Dashboard.
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <!--begin::Player Detail Modal (ADM-09)-->
+    <div class="modal fade" id="playerDetailModal" tabindex="-1" aria-labelledby="playerDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="playerDetailModalLabel">Detail Pemain</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4 text-center">
+                <img src="./assets/img/user1-128x128.jpg" class="rounded-circle mb-3" width="120" height="120" alt="Player Avatar" id="playerAvatar">
+                <h5 id="playerName">Loading...</h5>
+                <p class="text-muted" id="playerEmail">Loading...</p>
+              </div>
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-primary"><i class="bi bi-trophy"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Skor Total</span>
+                        <span class="info-box-number" id="playerTotalScore">0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-success"><i class="bi bi-award"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Posisi</span>
+                        <span class="info-box-number" id="playerPosition">0</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-warning"><i class="bi bi-controller"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Game Dimainkan</span>
+                        <span class="info-box-number" id="playerGamesPlayed">0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-info"><i class="bi bi-calendar"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Bergabung</span>
+                        <span class="info-box-number" style="font-size: 14px;" id="playerJoinDate">-</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <h6>Riwayat Permainan Terakhir</h6>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Kategori</th>
+                    <th>Skor</th>
+                    <th>Durasi</th>
+                  </tr>
+                </thead>
+                <tbody id="playerGameHistory">
+                  <!-- Will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" onclick="deactivatePlayer()" id="deactivateBtn">
+              <i class="bi bi-person-x me-1"></i>Nonaktifkan
+            </button>
+            <button type="button" class="btn btn-warning" onclick="deletePlayer()" id="deleteBtn">
+              <i class="bi bi-trash me-1"></i>Hapus
+            </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end::Player Detail Modal-->
+
+    <!--begin::Script-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/adminlte.js"></script>
+
+    <!-- Players Management Script -->
+    <script>
+      // Mock data untuk pemain
+      let playersData = [
+        {
+          id: 1,
+          name: "Ahmad Fauzi",
+          email: "ahmad.fauzi@ui.ac.id",
+          score: 95.8,
+          position: 1,
+          gamesPlayed: 124,
+          joinDate: "2024-09-15",
+          status: "active",
+          lastLogin: "2025-11-10",
+          gameHistory: [
+            { date: "2025-11-10", category: "Budgeting", score: 89, duration: "15m 32s" },
+            { date: "2025-11-09", category: "Investment", score: 92, duration: "18m 45s" },
+            { date: "2025-11-08", category: "Saving", score: 87, duration: "12m 15s" }
+          ]
+        },
+        {
+          id: 2,
+          name: "Siti Nurhaliza",
+          email: "siti.nur@itb.ac.id",
+          score: 93.2,
+          position: 2,
+          gamesPlayed: 118,
+          joinDate: "2024-09-20",
+          status: "active",
+          lastLogin: "2025-11-09",
+          gameHistory: [
+            { date: "2025-11-09", category: "Saving", score: 88, duration: "18m 45s" },
+            { date: "2025-11-08", category: "Budgeting", score: 91, duration: "16m 20s" }
+          ]
+        },
+        {
+          id: 3,
+          name: "Budi Santoso",
+          email: "budi.santoso@ugm.ac.id",
+          score: 91.7,
+          position: 3,
+          gamesPlayed: 109,
+          joinDate: "2024-10-01",
+          status: "active",
+          lastLogin: "2025-11-10",
+          gameHistory: [
+            { date: "2025-11-10", category: "Investment", score: 72, duration: "22m 18s" },
+            { date: "2025-11-09", category: "Debt Management", score: 95, duration: "14m 30s" }
+          ]
+        },
+        {
+          id: 4,
+          name: "Rina Wijaya",
+          email: "rina.wijaya@unpad.ac.id",
+          score: 89.4,
+          position: 4,
+          gamesPlayed: 97,
+          joinDate: "2024-10-05",
+          status: "active",
+          lastLogin: "2025-11-08",
+          gameHistory: [
+            { date: "2025-11-08", category: "Debt Management", score: 91, duration: "12m 55s" }
+          ]
+        },
+        {
+          id: 5,
+          name: "Doni Pratama",
+          email: "doni.pratama@its.ac.id",
+          score: 85.6,
+          position: 5,
+          gamesPlayed: 89,
+          joinDate: "2024-10-10",
+          status: "inactive",
+          lastLogin: "2025-11-05",
+          gameHistory: [
+            { date: "2025-11-05", category: "Budgeting", score: 76, duration: "20m 15s" }
+          ]
+        }
+      ];
+
+      let currentPage = 1;
+      let itemsPerPage = 10;
+      let filteredPlayers = [...playersData];
+      let selectedPlayer = null;
+
+      // ADM-08: Lihat daftar pemain
+      function loadPlayersList() {
+        const tbody = document.getElementById('playersTableBody');
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const playersToShow = filteredPlayers.slice(startIndex, endIndex);
+
+        tbody.innerHTML = '';
+
+        playersToShow.forEach(player => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><span class="badge bg-primary">#${player.id}</span></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <img src="./assets/img/user${player.id}-128x128.jpg" class="rounded-circle me-2" width="32" height="32" alt="User" onerror="this.src='./assets/img/user1-128x128.jpg'">
+                <strong>${player.name}</strong>
+              </div>
+            </td>
+            <td>${player.email}</td>
+            <td>
+              <div class="progress" style="height: 20px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: ${player.score}%" aria-valuenow="${player.score}" aria-valuemin="0" aria-valuemax="100">${player.score}</div>
+              </div>
+            </td>
+            <td><span class="badge bg-warning">#${player.position}</span></td>
+            <td>${player.gamesPlayed}</td>
+            <td>${formatDate(player.joinDate)}</td>
+            <td>
+              <span class="badge bg-${getStatusColor(player.status)}">${getStatusText(player.status)}</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" onclick="viewPlayerDetail(${player.id})" title="Lihat Detail">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning" onclick="editPlayer(${player.id})" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        updatePagination();
+        updateStatistics();
+      }
+
+      // ADM-09: Lihat detail pemain
+      function viewPlayerDetail(playerId) {
+        selectedPlayer = playersData.find(p => p.id === playerId);
+        if (!selectedPlayer) return;
+
+        // Populate modal with player data
+        document.getElementById('playerName').textContent = selectedPlayer.name;
+        document.getElementById('playerEmail').textContent = selectedPlayer.email;
+        document.getElementById('playerTotalScore').textContent = selectedPlayer.score;
+        document.getElementById('playerPosition').textContent = `#${selectedPlayer.position}`;
+        document.getElementById('playerGamesPlayed').textContent = selectedPlayer.gamesPlayed;
+        document.getElementById('playerJoinDate').textContent = formatDate(selectedPlayer.joinDate);
+        
+        // Player avatar
+        document.getElementById('playerAvatar').src = `./assets/img/user${selectedPlayer.id}-128x128.jpg`;
+        document.getElementById('playerAvatar').onerror = function() {
+          this.src = './assets/img/user1-128x128.jpg';
+        };
+
+        // Game history
+        const historyTbody = document.getElementById('playerGameHistory');
+        historyTbody.innerHTML = '';
+        selectedPlayer.gameHistory.forEach(game => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${formatDate(game.date)}</td>
+            <td><span class="badge bg-info">${game.category}</span></td>
+            <td>${game.score}</td>
+            <td>${game.duration}</td>
+          `;
+          historyTbody.appendChild(row);
+        });
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('playerDetailModal'));
+        modal.show();
+      }
+
+      // ADM-10: Nonaktifkan / hapus pemain
+      function deactivatePlayer() {
+        if (!selectedPlayer) return;
+        
+        if (confirm(`Apakah Anda yakin ingin menonaktifkan pemain ${selectedPlayer.name}?`)) {
+          selectedPlayer.status = 'banned';
+          loadPlayersList();
+          bootstrap.Modal.getInstance(document.getElementById('playerDetailModal')).hide();
+          showToast(`Pemain ${selectedPlayer.name} telah dinonaktifkan`, 'warning');
+        }
+      }
+
+      function deletePlayer() {
+        if (!selectedPlayer) return;
+        
+        if (confirm(`PERINGATAN: Menghapus pemain akan menghapus semua data permainan. Apakah Anda yakin ingin menghapus ${selectedPlayer.name}?`)) {
+          const index = playersData.findIndex(p => p.id === selectedPlayer.id);
+          if (index > -1) {
+            playersData.splice(index, 1);
+            filteredPlayers = [...playersData];
+            loadPlayersList();
+            bootstrap.Modal.getInstance(document.getElementById('playerDetailModal')).hide();
+            showToast(`Pemain ${selectedPlayer.name} telah dihapus`, 'danger');
+          }
+        }
+      }
+
+      function editPlayer(playerId) {
+        // This would open an edit modal in a real implementation
+        showToast('Fitur edit akan segera tersedia', 'info');
+      }
+
+      // ADM-11: Cari & filter pemain
+      function applyPlayerFilters() {
+        const searchName = document.getElementById('searchName').value.toLowerCase();
+        const minScore = parseFloat(document.getElementById('minScore').value) || 0;
+        const maxScore = parseFloat(document.getElementById('maxScore').value) || 100;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const joinDate = document.getElementById('joinDate').value;
+
+        filteredPlayers = playersData.filter(player => {
+          const nameMatch = !searchName || player.name.toLowerCase().includes(searchName);
+          const scoreMatch = player.score >= minScore && player.score <= maxScore;
+          const statusMatch = !statusFilter || player.status === statusFilter;
+          const dateMatch = !joinDate || player.joinDate === joinDate;
+          
+          return nameMatch && scoreMatch && statusMatch && dateMatch;
+        });
+
+        currentPage = 1;
+        loadPlayersList();
+        showToast(`Ditemukan ${filteredPlayers.length} pemain`, 'info');
+      }
+
+      function resetPlayerFilters() {
+        document.getElementById('searchName').value = '';
+        document.getElementById('minScore').value = '';
+        document.getElementById('maxScore').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('joinDate').value = '';
+        
+        filteredPlayers = [...playersData];
+        currentPage = 1;
+        loadPlayersList();
+      }
+
+      function refreshPlayersList() {
+        // Simulate API call
+        showToast('Data pemain telah diperbarui', 'success');
+        loadPlayersList();
+      }
+
+      // ADM-12: Statistik pemain
+      function updateStatistics() {
+        const totalPlayers = playersData.length;
+        const activePlayers = playersData.filter(p => p.status === 'active').length;
+        const totalGamesPlayed = playersData.reduce((sum, p) => sum + p.gamesPlayed, 0);
+        const averageScore = playersData.reduce((sum, p) => sum + p.score, 0) / totalPlayers;
+
+        document.getElementById('totalPlayersCount').textContent = totalPlayers.toLocaleString();
+        document.getElementById('activePlayersCount').textContent = activePlayers.toLocaleString();
+        document.getElementById('totalGamesPlayed').textContent = totalGamesPlayed.toLocaleString();
+        document.getElementById('averagePlayerScore').textContent = averageScore.toFixed(1);
+      }
+
+      function updatePagination() {
+        const totalPages = Math.ceil(filteredPlayers.length / itemsPerPage);
+        const pagination = document.getElementById('playersPagination');
+        
+        pagination.innerHTML = '';
+        
+        // Previous button
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
+        pagination.appendChild(prevLi);
+        
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+          li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+          pagination.appendChild(li);
+        }
+        
+        // Next button
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
+        pagination.appendChild(nextLi);
+      }
+
+      function changePage(page) {
+        const totalPages = Math.ceil(filteredPlayers.length / itemsPerPage);
+        if (page >= 1 && page <= totalPages) {
+          currentPage = page;
+          loadPlayersList();
+        }
+      }
+
+      // Utility functions
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID');
+      }
+
+      function getStatusColor(status) {
+        switch (status) {
+          case 'active': return 'success';
+          case 'inactive': return 'secondary';
+          case 'banned': return 'danger';
+          default: return 'secondary';
+        }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case 'active': return 'Aktif';
+          case 'inactive': return 'Tidak Aktif';
+          case 'banned': return 'Dinonaktifkan';
+          default: return 'Unknown';
+        }
+      }
+
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'danger' ? 'danger' : 'primary'} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="bi bi-info-circle me-2"></i>${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        `;
+        
+        document.body.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+          document.body.removeChild(toast);
+        });
+      }
+
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', function() {
+        loadPlayersList();
+        
+        // OverlayScrollbars configuration
+        const sidebarWrapper = document.querySelector('.sidebar-wrapper');
+        if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
+          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+            scrollbars: {
+              theme: 'os-theme-light',
+              autoHide: 'leave',
+              clickScroll: true,
+            },
+          });
+        }
+      });
+    </script>
+    <!--end::Script-->
+  </body>
+</html>

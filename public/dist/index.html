@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Dashboard Admin | Gamifikasi Literasi Keuangan</title>
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="Dashboard Admin | Gamifikasi Literasi Keuangan" />
+    <meta name="author" content="Admin Gamifikasi" />
+    <meta
+      name="description"
+      content="Dashboard admin untuk sistem gamifikasi literasi keuangan - monitoring performa pemain, analisis hasil, dan pelaporan komprehensif."
+    />
+    <meta
+      name="keywords"
+      content="gamifikasi, literasi keuangan, dashboard admin, monitoring, pelaporan, analisis performa"
+    />
+    <!--end::Primary Meta Tags-->
+    <!--begin::Accessibility Features-->
+    <!-- Skip links will be dynamically added by accessibility.js -->
+    <meta name="supported-color-schemes" content="light dark" />
+    <link rel="preload" href="./css/adminlte.css" as="style" />
+    <!--end::Accessibility Features-->
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
+    />
+    <!--end::Fonts-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="./css/adminlte.css" />
+    <!--end::Required Plugin(AdminLTE)-->
+    <!-- apexcharts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
+      integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
+      crossorigin="anonymous"
+    />
+    <!-- Chart.js -->
+    <style>
+      .chart-legend {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .chart-legend-item {
+        display: flex;
+        align-items: center;
+        margin: 0 15px 5px 0;
+      }
+      .chart-legend-color {
+        width: 12px;
+        height: 12px;
+        margin-right: 5px;
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body">
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Dashboard</a></li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Laporan</a></li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::Navbar Search-->
+            <li class="nav-item">
+              <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                <i class="bi bi-search"></i>
+              </a>
+            </li>
+            <!--end::Navbar Search-->
+            <!--begin::Quick Stats-->
+            <li class="nav-item dropdown">
+              <a class="nav-link" data-bs-toggle="dropdown" href="#">
+                <i class="bi bi-graph-up"></i>
+                <span class="navbar-badge badge text-bg-success">Live</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <span class="dropdown-item dropdown-header">Statistik Real-time</span>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="bi bi-people-fill me-2 text-primary"></i> 15 pemain online
+                  <span class="float-end text-secondary fs-7">sekarang</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="bi bi-controller me-2 text-success"></i> 7 sesi aktif
+                  <span class="float-end text-secondary fs-7">berlangsung</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="bi bi-trophy-fill me-2 text-warning"></i> Skor tertinggi: 98.5
+                  <span class="float-end text-secondary fs-7">hari ini</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item dropdown-footer">Lihat Dashboard Lengkap</a>
+              </div>
+            </li>
+            <!--end::Quick Stats-->
+            <!--begin::Notifications Dropdown Menu-->
+            <li class="nav-item dropdown">
+              <a class="nav-link" data-bs-toggle="dropdown" href="#">
+                <i class="bi bi-bell-fill"></i>
+                <span class="navbar-badge badge text-bg-warning">5</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <span class="dropdown-item dropdown-header">5 Notifikasi Baru</span>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="bi bi-trophy-fill me-2 text-warning"></i> Skor baru tertinggi dicapai
+                  <span class="float-end text-secondary fs-7">5 menit</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="bi bi-people-fill me-2 text-primary"></i> 3 pemain baru mendaftar
+                  <span class="float-end text-secondary fs-7">1 jam</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="bi bi-exclamation-triangle me-2 text-danger"></i> Sistem perlu pemeliharaan
+                  <span class="float-end text-secondary fs-7">2 jam</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item dropdown-footer">Lihat Semua Notifikasi</a>
+              </div>
+            </li>
+            <!--end::Notifications Dropdown Menu-->
+            <!--begin::Fullscreen Toggle-->
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+                <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+                <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+              </a>
+            </li>
+            <!--end::Fullscreen Toggle-->
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img
+                  src="./assets/img/user2-160x160.jpg"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline">Admin Gamifikasi</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <!--begin::User Image-->
+                <li class="user-header text-bg-primary">
+                  <img
+                    src="./assets/img/user2-160x160.jpg"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Admin Gamifikasi - System Administrator
+                    <small>Login terakhir: 10 Nov 2025</small>
+                  </p>
+                </li>
+                <!--end::User Image-->
+                <!--begin::Menu Body-->
+                <li class="user-body">
+                  <!--begin::Row-->
+                  <div class="row">
+                    <div class="col-4 text-center"><a href="#">Pemain</a></div>
+                    <div class="col-4 text-center"><a href="#">Laporan</a></div>
+                    <div class="col-4 text-center"><a href="#">Analisis</a></div>
+                  </div>
+                  <!--end::Row-->
+                </li>
+                <!--end::Menu Body-->
+                <!--begin::Menu Footer-->
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                </li>
+                <!--end::Menu Footer-->
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand">
+          <!--begin::Brand Link-->
+          <a href="./index.html" class="brand-link">
+            <!--begin::Brand Image-->
+            <img
+              src="./assets/img/AdminLTELogo.png"
+              alt="Gamifikasi Logo"
+              class="brand-image opacity-75 shadow"
+            />
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light">Literasi Keuangan</span>
+            <!--end::Brand Text-->
+          </a>
+          <!--end::Brand Link-->
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <!--begin::Sidebar Menu-->
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <li class="nav-item">
+                <a href="./index.html" class="nav-link active">
+                  <i class="nav-icon bi bi-speedometer"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./players.html" class="nav-link">
+                  <i class="nav-icon bi bi-people-fill"></i>
+                  <p>Manajemen Pemain</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./sessions.html" class="nav-link">
+                  <i class="nav-icon bi bi-controller"></i>
+                  <p>Sesi Permainan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-book"></i>
+                  <p>Kategori Materi</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-bar-chart-fill"></i>
+                  <p>
+                    Laporan & Analisis
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Laporan Skor</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Analisis Performa</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Export Data</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-gear-fill"></i>
+                  <p>
+                    Pengaturan
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Pengaturan Umum</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./config-game.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Konfigurasi Game</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Manajemen User</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-header">AKUN & KEAMANAN</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-person-circle"></i>
+                  <p>Profil Admin</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-shield-lock"></i>
+                  <p>Keamanan</p>
+                </a>
+              </li>
+              <li class="nav-header">BANTUAN</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-question-circle-fill"></i>
+                  <p>FAQ</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-book"></i>
+                  <p>Panduan Penggunaan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-box-arrow-right"></i>
+                  <p>Logout</p>
+                </a>
+              </li>
+            </ul>
+            <!--end::Sidebar Menu-->
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard Gamifikasi Literasi Keuangan</h3>
+                <p class="text-muted">Monitoring dan analisis performa permainan edukatif</p>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+              </div>
+            </div>
+            <!--begin::Filter Section-->
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-funnel me-2"></i>Filter Laporan</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Tanggal Mulai</label>
+                          <input type="date" class="form-control" id="startDate" value="2024-01-01">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Tanggal Akhir</label>
+                          <input type="date" class="form-control" id="endDate" value="2024-12-31">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Pemain</label>
+                          <select class="form-control" id="playerFilter">
+                            <option value="">Semua Pemain</option>
+                            <option value="1">Ahmad Fauzi</option>
+                            <option value="2">Siti Nurhaliza</option>
+                            <option value="3">Budi Santoso</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Kategori</label>
+                          <select class="form-control" id="categoryFilter">
+                            <option value="">Semua Kategori</option>
+                            <option value="budgeting">Budgeting</option>
+                            <option value="saving">Saving</option>
+                            <option value="investment">Investment</option>
+                            <option value="debt">Debt Management</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-12">
+                        <button type="button" class="btn btn-primary me-2" onclick="applyFilters()">
+                          <i class="bi bi-search me-1"></i>Terapkan Filter
+                        </button>
+                        <button type="button" class="btn btn-secondary me-2" onclick="resetFilters()">
+                          <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                        </button>
+                        <button type="button" class="btn btn-success me-2" onclick="exportToPDF()">
+                          <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="exportToCSV()">
+                          <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Filter Section-->
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Dashboard Summary Row (ADM-26)-->
+            <div class="row">
+              <!--begin::Total Pemain-->
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-primary">
+                  <div class="inner">
+                    <h3 id="totalPlayers">1,247</h3>
+                    <p>Total Pemain</p>
+                    <small class="text-light"><i class="bi bi-arrow-up"></i> +12% dari bulan lalu</small>
+                  </div>
+                  <i class="small-box-icon bi bi-people-fill"></i>
+                  <a
+                    href="/dist/players.html"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Lihat Detail <i class="bi bi-link-45deg"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Total Pemain-->
+              
+              <!--begin::Total Sesi-->
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-success">
+                  <div class="inner">
+                    <h3 id="totalSessions">8,456</h3>
+                    <p>Total Sesi Permainan</p>
+                    <small class="text-light"><i class="bi bi-arrow-up"></i> +18% dari bulan lalu</small>
+                  </div>
+                  <i class="small-box-icon bi bi-controller"></i>
+                  <a
+                    href="/dist/sessions.html"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Lihat Detail <i class="bi bi-link-45deg"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Total Sesi-->
+              
+              <!--begin::Rata-rata Skor-->
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-warning">
+                  <div class="inner">
+                    <h3 id="averageScore">87.5</h3>
+                    <p>Rata-rata Skor</p>
+                    <small class="text-dark"><i class="bi bi-arrow-up"></i> +3.2 poin</small>
+                  </div>
+                  <i class="small-box-icon bi bi-trophy-fill"></i>
+                  <a
+                    href="#performanceCharts"
+                    class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Lihat Grafik <i class="bi bi-link-45deg"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Rata-rata Skor-->
+              
+              <!--begin::Kategori Populer-->
+              <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-info">
+                  <div class="inner">
+                    <h3 id="popularCategory" style="font-size: 1.2rem;">Budgeting</h3>
+                    <p>Kategori Terpopuler</p>
+                    <small class="text-light">2,134 sesi bulan ini</small>
+                  </div>
+                  <i class="small-box-icon bi bi-graph-up-arrow"></i>
+                  <a
+                    href="#performanceCharts"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                  >
+                    Lihat Analisis <i class="bi bi-link-45deg"></i>
+                  </a>
+                </div>
+              </div>
+              <!--end::Kategori Populer-->
+            </div>
+            <!--end::Dashboard Summary Row-->
+            <!--begin::Performance Charts Row (ADM-27)-->
+            <div class="row" id="performanceCharts">
+              <!-- Start col -->
+              <div class="col-lg-7 connectedSortable">
+                <!-- Grafik Skor Rata-rata per Kategori -->
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-bar-chart me-2"></i>Skor Rata-rata per Kategori</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div id="category-score-chart"></div>
+                  </div>
+                </div>
+                
+                <!-- Tren Permainan -->
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-graph-up me-2"></i>Tren Permainan (30 Hari Terakhir)</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div id="trend-chart"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.Start col -->
+              <!-- Start col -->
+              <div class="col-lg-5 connectedSortable">
+                <!-- Top Performers -->
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-trophy me-2"></i>Top Performers Bulan Ini</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="list-group">
+                          <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span class="badge bg-warning me-2">1</span>
+                              <div>
+                                <strong>Ahmad Fauzi</strong><br>
+                                <small class="text-muted">Universitas Indonesia</small>
+                              </div>
+                            </div>
+                            <div class="text-end">
+                              <span class="badge bg-success">95.8</span><br>
+                              <small class="text-muted">124 sesi</small>
+                            </div>
+                          </div>
+                          <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span class="badge bg-secondary me-2">2</span>
+                              <div>
+                                <strong>Siti Nurhaliza</strong><br>
+                                <small class="text-muted">ITB</small>
+                              </div>
+                            </div>
+                            <div class="text-end">
+                              <span class="badge bg-success">93.2</span><br>
+                              <small class="text-muted">118 sesi</small>
+                            </div>
+                          </div>
+                          <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span class="badge bg-warning me-2">3</span>
+                              <div>
+                                <strong>Budi Santoso</strong><br>
+                                <small class="text-muted">UGM</small>
+                              </div>
+                            </div>
+                            <div class="text-end">
+                              <span class="badge bg-success">91.7</span><br>
+                              <small class="text-muted">109 sesi</small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Category Distribution -->
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-pie-chart me-2"></i>Distribusi Kategori</h3>
+                  </div>
+                  <div class="card-body">
+                    <div id="category-distribution-chart" style="height: 220px"></div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="row text-center">
+                      <div class="col-3">
+                        <div id="budgeting-sparkline"></div>
+                        <div class="small">Budgeting</div>
+                        <div class="font-weight-bold">32%</div>
+                      </div>
+                      <div class="col-3">
+                        <div id="saving-sparkline"></div>
+                        <div class="small">Saving</div>
+                        <div class="font-weight-bold">25%</div>
+                      </div>
+                      <div class="col-3">
+                        <div id="investment-sparkline"></div>
+                        <div class="small">Investment</div>
+                        <div class="font-weight-bold">28%</div>
+                      </div>
+                      <div class="col-3">
+                        <div id="debt-sparkline"></div>
+                        <div class="small">Debt Mgmt</div>
+                        <div class="font-weight-bold">15%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.Start col -->
+            </div>
+            <!-- /.row (main row) -->
+            
+            <!--begin::Game Sessions Report (ADM-28)-->
+            <div class="row" id="gameSessionsSection">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-table me-2"></i>Laporan Hasil Permainan</h3>
+                    <div class="card-tools">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshGameSessions()">
+                          <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="exportGameSessions()">
+                          <i class="bi bi-download me-1"></i>Export
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover" id="gameSessionsTable">
+                        <thead>
+                          <tr>
+                            <th>ID Sesi</th>
+                            <th>Pemain</th>
+                            <th>Kategori</th>
+                            <th>Tanggal</th>
+                            <th>Durasi</th>
+                            <th>Skor</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><span class="badge bg-primary">#GS-2024-001</span></td>
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <img src="./assets/img/user1-128x128.jpg" class="rounded-circle me-2" width="32" height="32" alt="User">
+                                <div>
+                                  <strong>Ahmad Fauzi</strong><br>
+                                  <small class="text-muted">ahmad.fauzi@ui.ac.id</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-info">Budgeting</span></td>
+                            <td>
+                              <div>10 Nov 2024</div>
+                              <small class="text-muted">14:30 WIB</small>
+                            </td>
+                            <td>15m 32s</td>
+                            <td>
+                              <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95</div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-success">Selesai</span></td>
+                            <td>
+                              <button class="btn btn-sm btn-outline-primary" onclick="viewSessionDetail('GS-2024-001')">
+                                <i class="bi bi-eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge bg-primary">#GS-2024-002</span></td>
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <img src="./assets/img/user3-128x128.jpg" class="rounded-circle me-2" width="32" height="32" alt="User">
+                                <div>
+                                  <strong>Siti Nurhaliza</strong><br>
+                                  <small class="text-muted">siti.nur@itb.ac.id</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-warning">Saving</span></td>
+                            <td>
+                              <div>10 Nov 2024</div>
+                              <small class="text-muted">13:45 WIB</small>
+                            </td>
+                            <td>18m 45s</td>
+                            <td>
+                              <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 88%" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100">88</div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-success">Selesai</span></td>
+                            <td>
+                              <button class="btn btn-sm btn-outline-primary" onclick="viewSessionDetail('GS-2024-002')">
+                                <i class="bi bi-eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge bg-primary">#GS-2024-003</span></td>
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <img src="./assets/img/user5-128x128.jpg" class="rounded-circle me-2" width="32" height="32" alt="User">
+                                <div>
+                                  <strong>Budi Santoso</strong><br>
+                                  <small class="text-muted">budi.santoso@ugm.ac.id</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-success">Investment</span></td>
+                            <td>
+                              <div>10 Nov 2024</div>
+                              <small class="text-muted">12:20 WIB</small>
+                            </td>
+                            <td>22m 18s</td>
+                            <td>
+                              <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">72</div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-success">Selesai</span></td>
+                            <td>
+                              <button class="btn btn-sm btn-outline-primary" onclick="viewSessionDetail('GS-2024-003')">
+                                <i class="bi bi-eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge bg-primary">#GS-2024-004</span></td>
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <img src="./assets/img/user7-128x128.jpg" class="rounded-circle me-2" width="32" height="32" alt="User">
+                                <div>
+                                  <strong>Rina Wijaya</strong><br>
+                                  <small class="text-muted">rina.wijaya@unpad.ac.id</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-danger">Debt Management</span></td>
+                            <td>
+                              <div>10 Nov 2024</div>
+                              <small class="text-muted">11:15 WIB</small>
+                            </td>
+                            <td>12m 55s</td>
+                            <td>
+                              <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 91%" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100">91</div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-success">Selesai</span></td>
+                            <td>
+                              <button class="btn btn-sm btn-outline-primary" onclick="viewSessionDetail('GS-2024-004')">
+                                <i class="bi bi-eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge bg-primary">#GS-2024-005</span></td>
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <img src="./assets/img/user8-128x128.jpg" class="rounded-circle me-2" width="32" height="32" alt="User">
+                                <div>
+                                  <strong>Doni Pratama</strong><br>
+                                  <small class="text-muted">doni.pratama@its.ac.id</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td><span class="badge bg-info">Budgeting</span></td>
+                            <td>
+                              <div>10 Nov 2024</div>
+                              <small class="text-muted">10:30 WIB</small>
+                            </td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><span class="badge bg-warning">Sedang Bermain</span></td>
+                            <td>
+                              <button class="btn btn-sm btn-outline-secondary" disabled>
+                                <i class="bi bi-clock"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Game Sessions Pagination">
+                      <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                          <span class="page-link">Previous</span>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                          <a class="page-link" href="#">Next</a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Game Sessions Report-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+          Copyright &copy; 2025&nbsp;
+          <a href="#" class="text-decoration-none">Gamifikasi Literasi Keuangan</a>.
+        </strong>
+        Sistem Admin Dashboard.
+        <!--end::Copyright-->
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+    <!--begin::Script-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+    <script src="./js/adminlte.js"></script>
+    <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+    <script>
+      const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
+      const Default = {
+        scrollbarTheme: 'os-theme-light',
+        scrollbarAutoHide: 'leave',
+        scrollbarClickScroll: true,
+      };
+      document.addEventListener('DOMContentLoaded', function () {
+        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+        if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
+          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+            scrollbars: {
+              theme: Default.scrollbarTheme,
+              autoHide: Default.scrollbarAutoHide,
+              clickScroll: Default.scrollbarClickScroll,
+            },
+          });
+        }
+      });
+    </script>
+    <!--end::OverlayScrollbars Configure-->
+    <!-- OPTIONAL SCRIPTS -->
+    <!-- sortablejs -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- sortablejs -->
+    <script>
+      new Sortable(document.querySelector('.connectedSortable'), {
+        group: 'shared',
+        handle: '.card-header',
+      });
+
+      const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
+      cardHeaders.forEach((cardHeader) => {
+        cardHeader.style.cursor = 'move';
+      });
+    </script>
+    <!-- External Libraries for Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- apexcharts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+      integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
+      crossorigin="anonymous"
+    ></script>
+    
+    <!-- Gamifikasi Dashboard Script -->
+    <script>
+      // Data untuk dashboard
+      const dashboardData = {
+        totalPlayers: 1247,
+        totalSessions: 8456,
+        averageScore: 87.5,
+        popularCategory: 'Budgeting',
+        categoryScores: {
+          'Budgeting': 89.2,
+          'Saving': 85.7,
+          'Investment': 82.1,
+          'Debt Management': 91.3
+        },
+        categoryDistribution: {
+          'Budgeting': 32,
+          'Saving': 25,
+          'Investment': 28,
+          'Debt Management': 15
+        },
+        trendData: {
+          labels: ['01 Nov', '02 Nov', '03 Nov', '04 Nov', '05 Nov', '06 Nov', '07 Nov', '08 Nov', '09 Nov', '10 Nov'],
+          sessions: [45, 52, 38, 61, 47, 55, 73, 69, 82, 91],
+          avgScores: [84, 86, 83, 88, 85, 87, 90, 89, 91, 88]
+        }
+      };
+
+      // Grafik Skor Rata-rata per Kategori
+      const categoryScoreOptions = {
+        series: [{
+          name: 'Skor Rata-rata',
+          data: Object.values(dashboardData.categoryScores)
+        }],
+        chart: {
+          height: 350,
+          type: 'bar',
+          toolbar: { show: false }
+        },
+        colors: ['#0d6efd', '#20c997', '#ffc107', '#dc3545'],
+        plotOptions: {
+          bar: {
+            borderRadius: 4,
+            horizontal: false,
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return val.toFixed(1);
+          }
+        },
+        xaxis: {
+          categories: Object.keys(dashboardData.categoryScores),
+        },
+        yaxis: {
+          title: {
+            text: 'Skor Rata-rata'
+          },
+          min: 70,
+          max: 100
+        },
+        title: {
+          text: 'Performa per Kategori Literasi Keuangan',
+          align: 'center'
+        }
+      };
+
+      const categoryScoreChart = new ApexCharts(
+        document.querySelector('#category-score-chart'),
+        categoryScoreOptions
+      );
+      categoryScoreChart.render();
+
+      // Grafik Tren Permainan
+      const trendOptions = {
+        series: [
+          {
+            name: 'Jumlah Sesi',
+            type: 'column',
+            data: dashboardData.trendData.sessions
+          },
+          {
+            name: 'Skor Rata-rata',
+            type: 'line',
+            data: dashboardData.trendData.avgScores
+          }
+        ],
+        chart: {
+          height: 350,
+          type: 'line',
+          stacked: false,
+          toolbar: { show: false }
+        },
+        stroke: {
+          width: [0, 2],
+          curve: 'smooth'
+        },
+        plotOptions: {
+          bar: {
+            columnWidth: '50%'
+          }
+        },
+        fill: {
+          opacity: [0.85, 1],
+        },
+        labels: dashboardData.trendData.labels,
+        markers: {
+          size: 0
+        },
+        xaxis: {
+          type: 'category'
+        },
+        yaxis: [
+          {
+            title: {
+              text: 'Jumlah Sesi',
+            },
+          },
+          {
+            opposite: true,
+            title: {
+              text: 'Skor Rata-rata'
+            }
+          }
+        ],
+        colors: ['#0d6efd', '#20c997'],
+        legend: {
+          horizontalAlign: 'left',
+          offsetX: 40
+        }
+      };
+
+      const trendChart = new ApexCharts(
+        document.querySelector('#trend-chart'),
+        trendOptions
+      );
+      trendChart.render();
+
+      // Grafik Distribusi Kategori (Donut Chart)
+      const distributionOptions = {
+        series: Object.values(dashboardData.categoryDistribution),
+        chart: {
+          type: 'donut',
+          height: 220
+        },
+        labels: Object.keys(dashboardData.categoryDistribution),
+        colors: ['#0d6efd', '#ffc107', '#20c997', '#dc3545'],
+        legend: {
+          show: false
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '70%'
+            }
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return Math.round(val) + '%';
+          }
+        }
+      };
+
+      const distributionChart = new ApexCharts(
+        document.querySelector('#category-distribution-chart'),
+        distributionOptions
+      );
+      distributionChart.render();
+
+      // Sparkline Charts untuk kategori
+      const sparklineOptions = {
+        chart: {
+          type: 'area',
+          height: 50,
+          sparkline: { enabled: true }
+        },
+        stroke: { curve: 'straight' },
+        fill: { opacity: 0.3 },
+        yaxis: { min: 0 }
+      };
+
+      // Budgeting sparkline
+      const budgetingSparkline = new ApexCharts(
+        document.querySelector('#budgeting-sparkline'),
+        {
+          ...sparklineOptions,
+          series: [{ data: [20, 25, 30, 32, 35, 32] }],
+          colors: ['#0d6efd']
+        }
+      );
+      budgetingSparkline.render();
+
+      // Saving sparkline
+      const savingSparkline = new ApexCharts(
+        document.querySelector('#saving-sparkline'),
+        {
+          ...sparklineOptions,
+          series: [{ data: [15, 18, 22, 25, 23, 25] }],
+          colors: ['#ffc107']
+        }
+      );
+      savingSparkline.render();
+
+      // Investment sparkline
+      const investmentSparkline = new ApexCharts(
+        document.querySelector('#investment-sparkline'),
+        {
+          ...sparklineOptions,
+          series: [{ data: [18, 22, 25, 28, 26, 28] }],
+          colors: ['#20c997']
+        }
+      );
+      investmentSparkline.render();
+
+      // Debt Management sparkline
+      const debtSparkline = new ApexCharts(
+        document.querySelector('#debt-sparkline'),
+        {
+          ...sparklineOptions,
+          series: [{ data: [10, 12, 14, 15, 13, 15] }],
+          colors: ['#dc3545']
+        }
+      );
+      debtSparkline.render();
+
+      // Fungsi untuk Filter
+      function applyFilters() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const player = document.getElementById('playerFilter').value;
+        const category = document.getElementById('categoryFilter').value;
+        
+        console.log('Applying filters:', { startDate, endDate, player, category });
+        
+        // Simulasi filter data
+        // Dalam implementasi nyata, ini akan mengirim request ke server
+        alert('Filter diterapkan! Data sedang dimuat...');
+        
+        // Refresh charts dan tables
+        refreshDashboard();
+      }
+
+      function resetFilters() {
+        document.getElementById('startDate').value = '2024-01-01';
+        document.getElementById('endDate').value = '2024-12-31';
+        document.getElementById('playerFilter').value = '';
+        document.getElementById('categoryFilter').value = '';
+        
+        refreshDashboard();
+      }
+
+      function refreshDashboard() {
+        // Simulasi refresh data
+        console.log('Refreshing dashboard data...');
+        
+        // Update metrics
+        updateMetrics();
+        
+        // Refresh charts
+        categoryScoreChart.updateSeries([{
+          data: Object.values(dashboardData.categoryScores)
+        }]);
+        
+        trendChart.updateSeries([
+          { data: dashboardData.trendData.sessions },
+          { data: dashboardData.trendData.avgScores }
+        ]);
+      }
+
+      function updateMetrics() {
+        // Simulasi update metrics dengan animasi
+        document.getElementById('totalPlayers').textContent = dashboardData.totalPlayers.toLocaleString();
+        document.getElementById('totalSessions').textContent = dashboardData.totalSessions.toLocaleString();
+        document.getElementById('averageScore').textContent = dashboardData.averageScore;
+        document.getElementById('popularCategory').textContent = dashboardData.popularCategory;
+      }
+
+      // Fungsi Export PDF (ADM-29)
+      function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFontSize(20);
+        doc.text('Laporan Dashboard Gamifikasi Literasi Keuangan', 20, 20);
+        
+        doc.setFontSize(12);
+        doc.text('Tanggal Export: ' + new Date().toLocaleDateString('id-ID'), 20, 30);
+        
+        // Summary metrics
+        doc.setFontSize(14);
+        doc.text('Ringkasan Metrik:', 20, 45);
+        
+        doc.setFontSize(10);
+        doc.text(`Total Pemain: ${dashboardData.totalPlayers.toLocaleString()}`, 20, 55);
+        doc.text(`Total Sesi: ${dashboardData.totalSessions.toLocaleString()}`, 20, 65);
+        doc.text(`Rata-rata Skor: ${dashboardData.averageScore}`, 20, 75);
+        doc.text(`Kategori Terpopuler: ${dashboardData.popularCategory}`, 20, 85);
+        
+        // Table data
+        const tableData = [
+          ['Kategori', 'Skor Rata-rata', 'Distribusi (%)'],
+          ['Budgeting', '89.2', '32%'],
+          ['Saving', '85.7', '25%'],
+          ['Investment', '82.1', '28%'],
+          ['Debt Management', '91.3', '15%']
+        ];
+        
+        doc.autoTable({
+          head: [tableData[0]],
+          body: tableData.slice(1),
+          startY: 95,
+          theme: 'striped'
+        });
+        
+        doc.save('dashboard-report.pdf');
+      }
+
+      // Fungsi Export CSV (ADM-29)
+      function exportToCSV() {
+        const csvData = [
+          ['Kategori', 'Skor Rata-rata', 'Distribusi (%)'],
+          ['Budgeting', '89.2', '32%'],
+          ['Saving', '85.7', '25%'],
+          ['Investment', '82.1', '28%'],
+          ['Debt Management', '91.3', '15%']
+        ];
+        
+        const csvContent = csvData.map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'dashboard-data.csv');
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+
+      // Fungsi untuk Game Sessions
+      function refreshGameSessions() {
+        console.log('Refreshing game sessions...');
+        // Simulasi refresh data sesi
+        alert('Data sesi permainan telah diperbarui!');
+      }
+
+      function exportGameSessions() {
+        exportToPDF(); // Menggunakan fungsi export PDF yang sama
+      }
+
+      function viewSessionDetail(sessionId) {
+        alert(`Menampilkan detail sesi: ${sessionId}\n\nFitur ini akan membuka modal dengan detail lengkap sesi permainan.`);
+      }
+
+      // Initialize dashboard ketika halaman loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard Gamifikasi Literasi Keuangan loaded');
+        updateMetrics();
+      });
+    </script>
+    <!--end::Script-->
+  </body>
+  <!--end::Body-->
+</html>

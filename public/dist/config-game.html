@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Konfigurasi Game | Gamifikasi Literasi Keuangan</title>
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="Konfigurasi Game | Gamifikasi Literasi Keuangan" />
+    <meta name="author" content="Admin Gamifikasi" />
+    <meta
+      name="description"
+      content="Konfigurasi dan pengaturan game gamifikasi literasi keuangan"
+    />
+    <!--end::Primary Meta Tags-->
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
+    />
+    <!--end::Fonts-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="./css/adminlte.css" />
+    <!--end::Required Plugin(AdminLTE)-->
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body">
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block"><a href="./index.html" class="nav-link">Dashboard</a></li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Laporan</a></li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::Fullscreen Toggle-->
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+                <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+                <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+              </a>
+            </li>
+            <!--end::Fullscreen Toggle-->
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <img
+                  src="./assets/img/user2-160x160.jpg"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline">Admin Gamifikasi</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <li class="user-header text-bg-primary">
+                  <img
+                    src="./assets/img/user2-160x160.jpg"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Admin Gamifikasi - System Administrator
+                    <small>Login terakhir: 10 Nov 2025</small>
+                  </p>
+                </li>
+                <li class="user-body">
+                  <div class="row">
+                    <div class="col-4 text-center"><a href="#">Pemain</a></div>
+                    <div class="col-4 text-center"><a href="#">Laporan</a></div>
+                    <div class="col-4 text-center"><a href="#">Analisis</a></div>
+                  </div>
+                </li>
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                </li>
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand">
+          <a href="./index.html" class="brand-link">
+            <img
+              src="./assets/img/AdminLTELogo.png"
+              alt="Gamifikasi Logo"
+              class="brand-image opacity-75 shadow"
+            />
+            <span class="brand-text fw-light">Literasi Keuangan</span>
+          </a>
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+            >
+              <li class="nav-item">
+                <a href="./index.html" class="nav-link">
+                  <i class="nav-icon bi bi-speedometer"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./players.html" class="nav-link">
+                  <i class="nav-icon bi bi-people-fill"></i>
+                  <p>Manajemen Pemain</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./sessions.html" class="nav-link">
+                  <i class="nav-icon bi bi-controller"></i>
+                  <p>Sesi Permainan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./game-content.html" class="nav-link">
+                  <i class="nav-icon bi bi-joystick"></i>
+                  <p>Manajemen Game</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-bar-chart-fill"></i>
+                  <p>
+                    Laporan & Analisis
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Laporan Skor</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Analisis Performa</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Export Data</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link active">
+                  <i class="nav-icon bi bi-gear-fill"></i>
+                  <p>
+                    Pengaturan
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Pengaturan Umum</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./config-game.html" class="nav-link active">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Konfigurasi Game</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Manajemen User</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-header">BANTUAN</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-question-circle-fill"></i>
+                  <p>FAQ</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-book"></i>
+                  <p>Panduan Penggunaan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-box-arrow-right"></i>
+                  <p>Logout</p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0">Konfigurasi Game</h3>
+                <p class="text-muted">Pengaturan konfigurasi permainan gamifikasi literasi keuangan</p>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="./index.html">Home</a></li>
+                  <li class="breadcrumb-item"><a href="#">Pengaturan</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Konfigurasi Game</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+            
+            <!--begin::Version Sync Status (ADM-07)-->
+            <div class="row">
+              <div class="col-12">
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                  <i class="bi bi-info-circle-fill me-2"></i>
+                  <div>
+                    <strong>Status Sinkronisasi:</strong> Versi server <span class="badge bg-primary ms-2" id="serverVersion">v2.1.3</span> 
+                    | Client terakhir sync: <span class="text-success" id="lastSync">10 Nov 2025, 14:30 WIB</span>
+                    <button class="btn btn-sm btn-outline-primary ms-3" onclick="syncVersion()">
+                      <i class="bi bi-arrow-clockwise me-1"></i>Sync Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Version Sync Status-->
+
+            <!--begin::Game Configuration (ADM-05 & ADM-06)-->
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-sliders me-2"></i>Konfigurasi Permainan</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-primary btn-sm" onclick="saveConfiguration()">
+                        <i class="bi bi-check2 me-1"></i>Simpan Perubahan
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <form id="gameConfigForm">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label for="minPlayers" class="form-label">Jumlah Pemain Minimum</label>
+                            <input type="number" class="form-control" id="minPlayers" value="2" min="1" max="10">
+                            <div class="form-text">Minimal pemain yang diperlukan untuk memulai permainan</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label for="maxPlayers" class="form-label">Jumlah Pemain Maksimal</label>
+                            <input type="number" class="form-control" id="maxPlayers" value="6" min="2" max="20">
+                            <div class="form-text">Maksimal pemain yang dapat bergabung dalam satu sesi</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label for="gameVersion" class="form-label">Versi Game</label>
+                            <input type="text" class="form-control" id="gameVersion" value="2.1.3" readonly>
+                            <div class="form-text">Versi saat ini dari konfigurasi game</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label for="sessionTimeout" class="form-label">Timeout Sesi (menit)</label>
+                            <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="120">
+                            <div class="form-text">Waktu maksimal untuk sesi yang tidak aktif</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label for="turnTimeout" class="form-label">Timeout Giliran (detik)</label>
+                            <input type="number" class="form-control" id="turnTimeout" value="60" min="30" max="300">
+                            <div class="form-text">Waktu maksimal untuk setiap giliran pemain</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="mb-3">
+                            <label for="maxScore" class="form-label">Skor Maksimal</label>
+                            <input type="number" class="form-control" id="maxScore" value="100" min="50" max="1000">
+                            <div class="form-text">Skor maksimal yang dapat dicapai pemain</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="gameMode" class="form-label">Mode Permainan</label>
+                        <select class="form-select" id="gameMode">
+                          <option value="competitive">Kompetitif</option>
+                          <option value="collaborative">Kolaboratif</option>
+                          <option value="educational">Edukatif</option>
+                        </select>
+                        <div class="form-text">Mode permainan yang akan digunakan</div>
+                      </div>
+
+                      <div class="mb-3">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="enableHints" checked>
+                          <label class="form-check-label" for="enableHints">
+                            Aktifkan Bantuan (Hints)
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="enableLeaderboard" checked>
+                          <label class="form-check-label" for="enableLeaderboard">
+                            Aktifkan Leaderboard
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="autoSave" checked>
+                          <label class="form-check-label" for="autoSave">
+                            Auto Save Progress
+                          </label>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <!--begin::Current Config Summary-->
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-info-circle me-2"></i>Ringkasan Konfigurasi</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item d-flex justify-content-between">
+                        <span>Pemain Min/Max:</span>
+                        <span class="badge bg-primary" id="playersRange">2-6</span>
+                      </div>
+                      <div class="list-group-item d-flex justify-content-between">
+                        <span>Versi:</span>
+                        <span class="badge bg-success" id="currentVersion">v2.1.3</span>
+                      </div>
+                      <div class="list-group-item d-flex justify-content-between">
+                        <span>Timeout Sesi:</span>
+                        <span class="badge bg-info" id="sessionTimeoutSummary">30 menit</span>
+                      </div>
+                      <div class="list-group-item d-flex justify-content-between">
+                        <span>Timeout Giliran:</span>
+                        <span class="badge bg-info" id="turnTimeoutSummary">60 detik</span>
+                      </div>
+                      <div class="list-group-item d-flex justify-content-between">
+                        <span>Mode:</span>
+                        <span class="badge bg-warning" id="gameModeSummary">Kompetitif</span>
+                      </div>
+                      <div class="list-group-item d-flex justify-content-between">
+                        <span>Skor Maksimal:</span>
+                        <span class="badge bg-danger" id="maxScoreSummary">100</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Current Config Summary-->
+
+                <!--begin::Sync History-->
+                <div class="card mt-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-clock-history me-2"></i>Riwayat Sinkronisasi</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">v2.1.3</h6>
+                          <small class="text-success">Berhasil</small>
+                        </div>
+                        <p class="mb-1">10 Nov 2025, 14:30 WIB</p>
+                        <small>Update timeout configuration</small>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">v2.1.2</h6>
+                          <small class="text-success">Berhasil</small>
+                        </div>
+                        <p class="mb-1">09 Nov 2025, 09:15 WIB</p>
+                        <small>Max players adjustment</small>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">v2.1.1</h6>
+                          <small class="text-warning">Partial</small>
+                        </div>
+                        <p class="mb-1">08 Nov 2025, 16:45 WIB</p>
+                        <small>Some clients not updated</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Sync History-->
+              </div>
+            </div>
+            <!--end::Game Configuration-->
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer">
+        <div class="float-end d-none d-sm-inline">v2.1.3</div>
+        <strong>
+          Copyright &copy; 2025&nbsp;
+          <a href="#" class="text-decoration-none">Gamifikasi Literasi Keuangan</a>.
+        </strong>
+        Sistem Admin Dashboard.
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <!--begin::Script-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/adminlte.js"></script>
+
+    <!-- Game Configuration Script -->
+    <script>
+      // Mock data untuk konfigurasi game
+      let gameConfig = {
+        minPlayers: 2,
+        maxPlayers: 6,
+        version: "2.1.3",
+        sessionTimeout: 30,
+        turnTimeout: 60,
+        maxScore: 100,
+        gameMode: "competitive",
+        enableHints: true,
+        enableLeaderboard: true,
+        autoSave: true
+      };
+
+      // ADM-05: Lihat konfigurasi permainan
+      function loadConfiguration() {
+        // Simulasi load dari API /config
+        document.getElementById('minPlayers').value = gameConfig.minPlayers;
+        document.getElementById('maxPlayers').value = gameConfig.maxPlayers;
+        document.getElementById('gameVersion').value = gameConfig.version;
+        document.getElementById('sessionTimeout').value = gameConfig.sessionTimeout;
+        document.getElementById('turnTimeout').value = gameConfig.turnTimeout;
+        document.getElementById('maxScore').value = gameConfig.maxScore;
+        document.getElementById('gameMode').value = gameConfig.gameMode;
+        document.getElementById('enableHints').checked = gameConfig.enableHints;
+        document.getElementById('enableLeaderboard').checked = gameConfig.enableLeaderboard;
+        document.getElementById('autoSave').checked = gameConfig.autoSave;
+        
+        updateSummary();
+      }
+
+      // ADM-06: Ubah konfigurasi permainan
+      function saveConfiguration() {
+        // Ambil nilai dari form
+        const formData = new FormData(document.getElementById('gameConfigForm'));
+        
+        gameConfig.minPlayers = parseInt(document.getElementById('minPlayers').value);
+        gameConfig.maxPlayers = parseInt(document.getElementById('maxPlayers').value);
+        gameConfig.sessionTimeout = parseInt(document.getElementById('sessionTimeout').value);
+        gameConfig.turnTimeout = parseInt(document.getElementById('turnTimeout').value);
+        gameConfig.maxScore = parseInt(document.getElementById('maxScore').value);
+        gameConfig.gameMode = document.getElementById('gameMode').value;
+        gameConfig.enableHints = document.getElementById('enableHints').checked;
+        gameConfig.enableLeaderboard = document.getElementById('enableLeaderboard').checked;
+        gameConfig.autoSave = document.getElementById('autoSave').checked;
+
+        // Simulasi save ke API
+        console.log('Saving configuration:', gameConfig);
+        
+        // Update version
+        const versionParts = gameConfig.version.split('.');
+        versionParts[2] = parseInt(versionParts[2]) + 1;
+        gameConfig.version = versionParts.join('.');
+        document.getElementById('gameVersion').value = gameConfig.version;
+        
+        updateSummary();
+        
+        // Show success message
+        showToast('Konfigurasi berhasil disimpan!', 'success');
+        
+        // Trigger sync
+        setTimeout(() => {
+          syncVersion();
+        }, 1000);
+      }
+
+      // ADM-07: Sinkronisasi versi
+      function syncVersion() {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        
+        // Show loading state
+        button.innerHTML = '<i class="bi bi-arrow-clockwise me-1 spinner-border spinner-border-sm"></i>Syncing...';
+        button.disabled = true;
+        
+        // Simulasi sync process
+        setTimeout(() => {
+          document.getElementById('serverVersion').textContent = 'v' + gameConfig.version;
+          document.getElementById('lastSync').textContent = new Date().toLocaleString('id-ID');
+          
+          button.innerHTML = originalText;
+          button.disabled = false;
+          
+          showToast('Sinkronisasi berhasil!', 'success');
+          
+          // Add to sync history
+          addSyncHistory(gameConfig.version, 'Berhasil', 'Configuration update');
+        }, 2000);
+      }
+
+      function updateSummary() {
+        document.getElementById('playersRange').textContent = 
+          gameConfig.minPlayers + '-' + gameConfig.maxPlayers;
+        document.getElementById('currentVersion').textContent = 'v' + gameConfig.version;
+        document.getElementById('sessionTimeoutSummary').textContent = gameConfig.sessionTimeout + ' menit';
+        document.getElementById('turnTimeoutSummary').textContent = gameConfig.turnTimeout + ' detik';
+        document.getElementById('maxScoreSummary').textContent = gameConfig.maxScore;
+        
+        const modeText = {
+          'competitive': 'Kompetitif',
+          'collaborative': 'Kolaboratif',
+          'educational': 'Edukatif'
+        };
+        document.getElementById('gameModeSummary').textContent = modeText[gameConfig.gameMode];
+      }
+
+      function addSyncHistory(version, status, description) {
+        // This would add to sync history in real implementation
+        console.log('Sync history added:', { version, status, description });
+      }
+
+      function showToast(message, type = 'info') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'primary'} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="bi bi-check-circle me-2"></i>${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(toast);
+        
+        // Initialize and show toast
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Remove from DOM after hidden
+        toast.addEventListener('hidden.bs.toast', () => {
+          document.body.removeChild(toast);
+        });
+      }
+
+      // Form validation
+      document.getElementById('minPlayers').addEventListener('change', function() {
+        const minVal = parseInt(this.value);
+        const maxInput = document.getElementById('maxPlayers');
+        const maxVal = parseInt(maxInput.value);
+        
+        if (minVal >= maxVal) {
+          maxInput.value = minVal + 1;
+        }
+      });
+
+      document.getElementById('maxPlayers').addEventListener('change', function() {
+        const maxVal = parseInt(this.value);
+        const minInput = document.getElementById('minPlayers');
+        const minVal = parseInt(minInput.value);
+        
+        if (maxVal <= minVal) {
+          minInput.value = maxVal - 1;
+        }
+      });
+
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', function() {
+        loadConfiguration();
+        
+        // OverlayScrollbars configuration
+        const sidebarWrapper = document.querySelector('.sidebar-wrapper');
+        if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
+          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+            scrollbars: {
+              theme: 'os-theme-light',
+              autoHide: 'leave',
+              clickScroll: true,
+            },
+          });
+        }
+      });
+    </script>
+    <!--end::Script-->
+  </body>
+</html>
