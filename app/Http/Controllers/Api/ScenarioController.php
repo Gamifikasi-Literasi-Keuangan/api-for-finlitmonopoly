@@ -9,24 +9,42 @@ use Illuminate\Http\Request;
 class ScenarioController extends Controller
 {
     /**
-     * Menampilkan satu skenario spesifik.
-     * Ini adalah implementasi API 19 (GET /scenario/{id})
+     * FUNGSI BARU: Mengambil DAFTAR SEMUA skenario.
+     * Ini akan menjadi endpoint: GET /scenarios
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(Request $request)
+    {
+        // Untuk "List View", kita tidak perlu semua data (seperti 'question' atau 'cluster_relevance')
+        // Kita hanya ambil kolom yang penting untuk ditampilkan di tabel admin.
+        $scenarios = Scenario::select(
+            'id', 
+            'title', 
+            'category', 
+            'difficulty', 
+            'created_at'
+        )
+        ->orderBy('created_at', 'desc') // Urutkan dari yang terbaru
+        ->get();
+
+        // Kembalikan sebagai koleksi (array) JSON
+        return response()->json($scenarios);
+    }
+
+    /**
+     * FUNGSI LAMA (API 19): Mengambil SATU skenario.
+     * Ini adalah endpoint: GET /scenario/{scenario}
      *
      * @param  \App\Models\Scenario  $scenario
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Scenario $scenario)
     {
-        // 1. (Otomatis) Laravel sudah menemukan 'Scenario' berdasarkan
-        //    ID di URL. Jika tidak ada, ia otomatis 404.
-
-        // 2. (Langkah 6 di diagram)
-        //    Kita perlu memuat "relasi" pilihan jawabannya.
-        //    Ini adalah 'JOIN' atau query kedua yang efisien.
+        // Kita load relasi 'options'
         $scenario->load('options');
 
-        // 3. (Langkah 7 di diagram)
-        //    Kembalikan data sebagai JSON.
+        // Kembalikan satu objek JSON
         return response()->json($scenario);
     }
 }

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard (Read-Only)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; gap: 20px; padding: 20px; background-color: #f0f2f5; }
+        .widget { width: 50%; background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .widget-header { padding: 20px; border-bottom: 1px solid #eee; }
+        .widget-header h2 { margin: 0; }
+        .list-view { height: 300px; overflow-y: auto; border-bottom: 1px solid #eee; }
+        .detail-view { height: 400px; overflow-y: auto; padding: 20px; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { padding: 12px 20px; border-bottom: 1px solid #eee; cursor: pointer; }
+        li:hover { background-color: #f9f9f9; }
+        li small { color: #666; display: block; }
+        .option { background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-top: 10px; border-radius: 5px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <div class="widget">
+        <div class="widget-header">
+            <h2>Manajemen Skenario</h2>
+            <button id="loadScenarios">Muat Daftar Skenario</button>
+        </div>
+        <div class="list-view">
+            <ul id="scenarioList"></ul>
+        </div>
+        <div class="detail-view" id="scenarioDetail">
+            <p>Klik skenario di atas untuk melihat detail.</p>
+        </div>
+    </div>
+
+    <div class="widget">
+        <div class="widget-header">
+            <h2>Riwayat Sesi & Leaderboard</h2>
+            <button id="loadSessions">Muat Sesi Selesai</button>
+        </div>
+        <div class="list-view">
+            <ul id="sessionList"></ul>
+        </div>
+        <div class="detail-view" id="leaderboardDetail">
+            <p>Klik sesi di atas untuk melihat leaderboard.</p>
+        </div>
+    </div>
+
+    <script>
+        // === KONFIGURASI ===
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+        // === ELEMEN WIDGET 1 ===
+        const loadScenariosBtn = document.getElementById('loadScenarios');
+        const scenarioListEl = document.getElementById('scenarioList');
+        const scenarioDetailEl = document.getElementById('scenarioDetail');
+
+        // === ELEMEN WIDGET 2 ===
+        const loadSessionsBtn = document.getElementById('loadSessions');
+        const sessionListEl = document.getElementById('sessionList');
+        const leaderboardDetailEl = document.getElementById('leaderboardDetail');
+
+        // === LOGIKA WIDGET 1: SKENARIO ===
+        
+        async function loadScenarios() {
+            scenarioListEl.innerHTML = '<li>Loading...</li>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/scenarios`);
+                const scenarios = await response.json();
+                scenarioListEl.innerHTML = ''; 
+                scenarios.forEach(s => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${s.title}</strong> (ID: ${s.id})<small>Kategori: ${s.category}</small>`;
+                    li.onclick = () => loadScenarioDetail(s.id); 
+                    scenarioListEl.appendChild(li);
+                });
+            } catch (error) {
+                scenarioListEl.innerHTML = `<li>Gagal memuat: ${error.message}</li>`;
+            }
+        }
+
+        async function loadScenarioDetail(scenarioId) {
+            scenarioDetailEl.innerHTML = '<p>Loading detail...</p>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/scenario/${scenarioId}`);
+                const scenario = await response.json();
+                let html = `
+                    <h3>${scenario.title}</h3>
+                    <p>${scenario.question}</p>
+                    <h4>Pilihan Jawaban:</h4>
+                `;
+                scenario.options.forEach(option => {
+                    html += `
+                        <div class="option">
+                            <strong>[${option.optionId}]</strong> ${option.text}
+                            <br><small>Skor: ${JSON.stringify(option.scoreChange)}</small>
+                        </div>
+                    `;
+                });
+                scenarioDetailEl.innerHTML = html;
+            } catch (error) {
+                scenarioDetailEl.innerHTML = `<p>Gagal memuat: ${error.message}</p>`;
+            }
+        }
+
+        // === LOGIKA WIDGET 2: LEADERBOARD ===
+
+        async function loadSessions() {
+            sessionListEl.innerHTML = '<li>Loading...</li>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/sessions/completed`); // Panggil API baru
+                const sessions = await response.json();
+                sessionListEl.innerHTML = ''; 
+                sessions.forEach(s => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>Sesi: ${s.sessionId}</strong><small>Selesai pada: ${s.ended_at}</small>`;
+                    li.onclick = () => loadLeaderboard(s.sessionId); 
+                    sessionListEl.appendChild(li);
+                });
+            } catch (error) {
+                sessionListEl.innerHTML = `<li>Gagal memuat: ${error.message}</li>`;
+            }
+        }
+
+        async function loadLeaderboard(sessionId) {
+            leaderboardDetailEl.innerHTML = '<p>Loading leaderboard...</p>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/leaderboard?session_id=${sessionId}`); // Panggil API 31
+                const data = await response.json();
+                
+                let html = `
+                    <h3>Hasil Sesi: ${data.session_id}</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Rank</th><th>Username</th><th>Skor</th></tr>
+                        </thead>
+                        <tbody>
+                `;
+                data.rankings.forEach(r => {
+                    html += `<tr><td>${r.rank}</td><td>${r.username}</td><td>${r.overall}</td></tr>`;
+                });
+                html += `</tbody></table>`;
+                leaderboardDetailEl.innerHTML = html;
+            } catch (error) {
+                leaderboardDetailEl.innerHTML = `<p>Gagal memuat: ${error.message}</p>`;
+            }
+        }
+
+        // === PASANG EVENT LISTENER ===
+        loadScenariosBtn.addEventListener('click', loadScenarios);
+        loadSessionsBtn.addEventListener('click', loadSessions);
+        
+        // Muat otomatis saat halaman dibuka
+        loadScenarios();
+        loadSessions();
+        window.addEventListener('error', function (e) {
+    console.error("Global JS Error:", e.message);
+});
+
+window.addEventListener('unhandledrejection', function (e) {
+    console.error("Unhandled Promise:", e.reason);
+});
+
+
+    </script>
+</body>
+</html>
