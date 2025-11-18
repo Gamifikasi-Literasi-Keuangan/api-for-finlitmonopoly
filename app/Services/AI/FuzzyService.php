@@ -37,4 +37,5 @@ class FuzzyService
             return self::LABELS[4];
         }
     }
+
 }
