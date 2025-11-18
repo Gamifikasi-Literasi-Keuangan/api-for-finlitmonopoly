@@ -18,4 +18,11 @@ class ProfilingController extends Controller
         $result = $this->profilingService->saveOnboardingAnswers($request->validated());
         return response()->json($result);
     }
+
+    public function cluster($playerId)
+    {
+        $result = $this->profilingService->runProfilingCluster($playerId);
+        return response()->json($result);
+    }
+
 }
