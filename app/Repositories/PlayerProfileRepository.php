@@ -41,4 +41,9 @@ class PlayerProfileRepository
         return PlayerProfile::where('PlayerId', $playerId)
             ->update($data);
     }
+    public function findFullProfile(string $playerId)
+    {
+        // Ambil semua kolom (cluster, scores, traits, dll)
+        return PlayerProfile::where('PlayerId', $playerId)->first();
+    }
 }

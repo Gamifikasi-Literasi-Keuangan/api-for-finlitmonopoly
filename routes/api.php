@@ -8,12 +8,15 @@ use App\Http\Controllers\ScenarioController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PlayerController;
+Use App\Http\Controllers\ProfilingController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 */
+//API 6
+Route::get('/profiling/details', [ProfilingController::class, 'details']);
 // Rute untuk API GET Scenarios (Publik untuk tes)
 Route::get('/scenarios', [ScenarioController::class, 'index']);
 
