@@ -15,6 +15,9 @@ Use App\Http\Controllers\ProfilingController;
 | API Routes
 |--------------------------------------------------------------------------
 */
+Route::get('/sessions', [SessionController::class, 'index']);
+
+
 //API 6
 Route::get('/profiling/details', [ProfilingController::class, 'details']);
 // Rute untuk API GET Scenarios (Publik untuk tes)

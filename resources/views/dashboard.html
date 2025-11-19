@@ -3,167 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard (Read-Only)</title>
+    <title>Admin Dashboard - Gamifikasi Keuangan</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; gap: 20px; padding: 20px; background-color: #f0f2f5; }
-        .widget { width: 50%; background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .widget-header { padding: 20px; border-bottom: 1px solid #eee; }
-        .widget-header h2 { margin: 0; }
-        .list-view { height: 300px; overflow-y: auto; border-bottom: 1px solid #eee; }
-        .detail-view { height: 400px; overflow-y: auto; padding: 20px; }
-        ul { list-style: none; padding: 0; margin: 0; }
-        li { padding: 12px 20px; border-bottom: 1px solid #eee; cursor: pointer; }
-        li:hover { background-color: #f9f9f9; }
-        li small { color: #666; display: block; }
-        .option { background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-top: 10px; border-radius: 5px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        /* --- CSS MODERN SEDERHANA --- */
+        :root {
+            --primary: #4f46e5; /* Indigo 600 */
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: #1e293b;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .sidebar h2 { margin-top: 0; font-size: 1.2rem; margin-bottom: 30px; color: #e2e8f0; }
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: #334155;
+            color: white;
+        }
+
+        /* MAIN CONTENT */
+        .main { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 1.8rem; }
+        .header p { color: var(--text-muted); margin-top: 5px; }
+
+        /* GRID LAYOUT */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; height: calc(100vh - 150px); }
+        .grid-full { height: calc(100vh - 150px); }
+
+        /* WIDGET CARD */
+        .widget {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .widget-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .widget-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+        
+        .widget-body { display: flex; flex: 1; min-height: 0; }
+
+        /* SPLIT VIEW (LIST & DETAIL) */
+        .list-panel { width: 35%; border-right: 1px solid var(--border); overflow-y: auto; background: #fff; }
+        .detail-panel { width: 65%; padding: 25px; overflow-y: auto; background: #fcfcfc; }
+
+        /* LIST ITEMS */
+        .list-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .list-item:hover { background-color: #f1f5f9; }
+        .list-item.active { background-color: #e0e7ff; border-left: 4px solid var(--primary); }
+        .list-item strong { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+        .list-item small { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* BUTTONS & BADGES */
+        .btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.85rem; transition: 0.2s; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-risk { background: var(--danger); }
+        .badge-safe { background: var(--success); }
+        .badge-neutral { background: var(--text-muted); }
+
+        /* DATA DISPLAY */
+        .data-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .data-title { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; display: block; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; margin: 0; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 10px; background: #f1f5f9; color: var(--text-muted); font-weight: 600; border-bottom: 2px solid var(--border); }
+        td { padding: 10px; border-bottom: 1px solid var(--border); }
+        
+        /* UTILS */
+        .hidden { display: none; }
+        .placeholder { color: var(--text-muted); text-align: center; margin-top: 30%; }
     </style>
 </head>
 <body>
 
-    <div class="widget">
-        <div class="widget-header">
-            <h2>Manajemen Skenario</h2>
-            <button id="loadScenarios">Muat Daftar Skenario</button>
-        </div>
-        <div class="list-view">
-            <ul id="scenarioList"></ul>
-        </div>
-        <div class="detail-view" id="scenarioDetail">
-            <p>Klik skenario di atas untuk melihat detail.</p>
-        </div>
+    <div class="sidebar">
+        <h2>🎮 Admin Panel</h2>
+        <div class="nav-item active" onclick="showTab('tab-players')">👥 Manajemen Pemain</div>
+        <div class="nav-item" onclick="showTab('tab-games')">🎲 Game Sessions</div>
+        <div class="nav-item" onclick="showTab('tab-content')">📚 Konten Skenario</div>
     </div>
 
-    <div class="widget">
-        <div class="widget-header">
-            <h2>Riwayat Sesi & Leaderboard</h2>
-            <button id="loadSessions">Muat Sesi Selesai</button>
+    <div class="main">
+        
+        <div class="header">
+            <h1 id="page-title">Manajemen Pemain & AI</h1>
+            <p>Pantau aktivitas pemain dan kinerja Kecerdasan Buatan.</p>
         </div>
-        <div class="list-view">
-            <ul id="sessionList"></ul>
+
+        <div id="tab-players" class="grid-2">
+            
+            <div class="widget" style="grid-column: span 2;">
+                <div class="widget-header">
+                    <h3>Daftar Pemain Terdaftar</h3>
+                    <button class="btn btn-sm" onclick="loadPlayers()">🔄 Refresh Data</button>
+                </div>
+                <div class="widget-body">
+                    <div class="list-panel" style="width: 30%;">
+                        <div id="playerList">Loading...</div>
+                    </div>
+                    <div class="detail-panel" style="width: 70%;" id="playerDetail">
+                        <div class="placeholder">👈 Pilih pemain di sebelah kiri untuk melihat Profil AI.</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="detail-view" id="leaderboardDetail">
-            <p>Klik sesi di atas untuk melihat leaderboard.</p>
+
+        <div id="tab-games" class="grid-2 hidden">
+            <div class="widget" style="grid-column: span 2;">
+                <div class="widget-header">
+                    <h3>Riwayat Sesi & Leaderboard</h3>
+                    <button class="btn btn-sm" onclick="loadSessions()">🔄 Refresh Data</button>
+                </div>
+                <div class="widget-body">
+                    <div class="list-panel" style="width: 30%;">
+                        <div id="sessionList">Loading...</div>
+                    </div>
+                    <div class="detail-panel" style="width: 70%;" id="sessionDetail">
+                        <div class="placeholder">👈 Pilih sesi untuk melihat hasil pertandingan.</div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div id="tab-content" class="grid-2 hidden">
+            <div class="widget" style="grid-column: span 2;">
+                <div class="widget-header">
+                    <h3>Pustaka Skenario</h3>
+                    <button class="btn btn-sm" onclick="loadScenarios()">🔄 Refresh Data</button>
+                </div>
+                <div class="widget-body">
+                    <div class="list-panel" style="width: 30%;">
+                        <div id="scenarioList">Loading...</div>
+                    </div>
+                    <div class="detail-panel" style="width: 70%;" id="scenarioDetail">
+                        <div class="placeholder">👈 Pilih skenario untuk melihat detail soal.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+    <div class="widget">
+    <div class="widget-header" style="background: #4b5563; color: white;">
+        <h3>🕹️ Simulator Gameplay (Admin)</h3>
+    </div>
+    <div class="widget-body" style="padding: 20px; flex-direction: column;">
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="text" id="simScenarioId" placeholder="Masukkan ID Skenario (cth: S_67)" 
+                   style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+            <button class="btn" onclick="runSimulation()">Mulai Simulasi</button>
+        </div>
+
+        <div id="simScreen" style="display: none;">
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                <span class="badge badge-neutral" id="simCategory">Kategori</span>
+                <h3 id="simTitle" style="margin-top: 10px; margin-bottom: 10px;">Judul Skenario</h3>
+                <p id="simQuestion" style="font-size: 1.1em; line-height: 1.5;">Pertanyaan...</p>
+            </div>
+
+            <div id="simOptions" style="display: flex; flex-direction: column; gap: 10px;">
+                </div>
+
+            <div id="simResult" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;">
+                </div>
+        </div>
+
+        <div id="simStatus" style="text-align: center; color: #666; margin-top: 20px;">
+            Siap untuk simulasi. Masukkan ID Skenario.
+        </div>
+
+    </div>
+</div>
 
     <script>
-        // === KONFIGURASI ===
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
-        // === ELEMEN WIDGET 1 ===
-        const loadScenariosBtn = document.getElementById('loadScenarios');
-        const scenarioListEl = document.getElementById('scenarioList');
-        const scenarioDetailEl = document.getElementById('scenarioDetail');
+        // === 1. LOGIKA NAVIGASI ===
+        function showTab(tabId) {
+            // Sembunyikan semua tab
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            // Tampilkan tab yang dipilih
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Update menu active state
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
 
-        // === ELEMEN WIDGET 2 ===
-        const loadSessionsBtn = document.getElementById('loadSessions');
-        const sessionListEl = document.getElementById('sessionList');
-        const leaderboardDetailEl = document.getElementById('leaderboardDetail');
+            // Update Title
+            const titles = {
+                'tab-players': 'Manajemen Pemain & AI',
+                'tab-games': 'Monitoring Permainan',
+                'tab-content': 'Manajemen Konten'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
 
-        // === LOGIKA WIDGET 1: SKENARIO ===
+            // Load data jika belum ada
+            if(tabId === 'tab-players') loadPlayers();
+            if(tabId === 'tab-games') loadSessions();
+            if(tabId === 'tab-content') loadScenarios();
+        }
         
-        async function loadScenarios() {
-            scenarioListEl.innerHTML = '<li>Loading...</li>';
-            try {
-                const response = await fetch(`${API_BASE_URL}/scenarios`);
-                const scenarios = await response.json();
-                scenarioListEl.innerHTML = ''; 
-                scenarios.forEach(s => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>${s.title}</strong> (ID: ${s.id})<small>Kategori: ${s.category}</small>`;
-                    li.onclick = () => loadScenarioDetail(s.id); 
-                    scenarioListEl.appendChild(li);
-                });
-            } catch (error) {
-                scenarioListEl.innerHTML = `<li>Gagal memuat: ${error.message}</li>`;
-            }
-        }
 
-        async function loadScenarioDetail(scenarioId) {
-            scenarioDetailEl.innerHTML = '<p>Loading detail...</p>';
+        // === 2. LOGIKA PLAYER & AI ===
+        async function loadPlayers() {
+            const container = document.getElementById('playerList');
+            container.innerHTML = '<div style="padding:20px; color:#666;">Loading...</div>';
             try {
-                const response = await fetch(`${API_BASE_URL}/scenario/${scenarioId}`);
-                const scenario = await response.json();
-                let html = `
-                    <h3>${scenario.title}</h3>
-                    <p>${scenario.question}</p>
-                    <h4>Pilihan Jawaban:</h4>
-                `;
-                scenario.options.forEach(option => {
-                    html += `
-                        <div class="option">
-                            <strong>[${option.optionId}]</strong> ${option.text}
-                            <br><small>Skor: ${JSON.stringify(option.scoreChange)}</small>
+                const res = await fetch(`${API_BASE_URL}/players`);
+                const data = await res.json();
+                container.innerHTML = '';
+                data.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `<strong>${p.name}</strong><small>${p.PlayerId}</small>`;
+                    div.onclick = () => {
+                        document.querySelectorAll('#playerList .list-item').forEach(el => el.classList.remove('active'));
+                        div.classList.add('active');
+                        loadPlayerFullDetail(p.PlayerId);
+                    };
+                    container.appendChild(div);
+                });
+            } catch (e) { container.innerHTML = `<div style="padding:20px; color:red;">Error: ${e.message}</div>`; }
+        }
+        // === 5. LOGIKA SIMULATOR GAMEPLAY ===
+
+async function runSimulation() {
+    const id = document.getElementById('simScenarioId').value.trim();
+    const screen = document.getElementById('simScreen');
+    const status = document.getElementById('simStatus');
+    const resultBox = document.getElementById('simResult');
+    const optionsBox = document.getElementById('simOptions');
+
+    if (!id) {
+        alert("Harap masukkan ID Skenario!");
+        return;
+    }
+
+    // Reset Tampilan
+    screen.style.display = 'none';
+    resultBox.style.display = 'none';
+    status.innerHTML = '🔄 Memuat Skenario dari API 19...';
+    status.style.display = 'block';
+
+    try {
+        // 1. Panggil API 19
+        const res = await fetch(`${API_BASE_URL}/scenario/${id}`);
+        
+        if (!res.ok) throw new Error("Skenario tidak ditemukan (404)");
+        
+        const data = await res.json();
+
+        // 2. Isi Data ke Layar
+        document.getElementById('simCategory').innerText = data.category;
+        document.getElementById('simTitle').innerText = data.title;
+        document.getElementById('simQuestion').innerText = data.question;
+
+        // 3. Buat Tombol Opsi
+        optionsBox.innerHTML = '';
+        data.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn'; // Gunakan class btn yang sudah ada
+            btn.style.cssText = "background: white; color: #333; border: 1px solid #ccc; text-align: left; padding: 15px; transition: 0.2s;";
+            
+            // Tampilan Tombol
+            btn.innerHTML = `<strong>${opt.optionId}.</strong> ${opt.text}`;
+            
+            // EVENT KLIK: Tampilkan Skor (Simulasi)
+            btn.onclick = () => showSimResult(opt, btn);
+            
+            // Efek Hover
+            btn.onmouseover = () => { btn.style.background = '#f1f5f9'; btn.style.borderColor = '#94a3b8'; };
+            btn.onmouseout = () => { if(!btn.classList.contains('selected')) btn.style.background = 'white'; };
+            
+            optionsBox.appendChild(btn);
+        });
+
+        // Tampilkan Layar
+        status.style.display = 'none';
+        screen.style.display = 'block';
+
+    } catch (e) {
+        status.innerHTML = `<span style="color: red;">❌ Error: ${e.message}</span>`;
+    }
+}
+
+function showSimResult(option, btnElement) {
+    const resultBox = document.getElementById('simResult');
+    const allBtns = document.getElementById('simOptions').children;
+
+    // Reset style tombol lain
+    for (let btn of allBtns) {
+        btn.style.background = 'white';
+        btn.style.borderColor = '#ccc';
+        btn.classList.remove('selected');
+        btn.disabled = true; // Matikan tombol setelah memilih (mirip game asli)
+    }
+
+    // Highlight tombol yang dipilih
+    btnElement.style.background = '#e0e7ff';
+    btnElement.style.borderColor = '#4f46e5';
+    btnElement.classList.add('selected');
+
+    // Cek Benar/Salah
+    const isCorrect = option.is_correct;
+    const color = isCorrect ? '#dcfce7' : '#fee2e2'; // Hijau / Merah muda
+    const textColor = isCorrect ? '#166534' : '#991b1b'; // Hijau tua / Merah tua
+    const icon = isCorrect ? '✅ JAWABAN BENAR' : '❌ JAWABAN SALAH';
+
+    // Tampilkan Dampak Skor (Dari JSON scoreChange)
+    // Karena scoreChange bentuknya JSON (misal: {"utang": -10}), kita format dulu
+    let scoreHtml = '';
+    if (option.scoreChange) {
+        // Parsing jika masih string, atau pakai langsung jika sudah object (tergantung respon API)
+        // Laravel biasanya mengembalikan JSON object langsung jika di-cast.
+        const scores = (typeof option.scoreChange === 'string') 
+            ? JSON.parse(option.scoreChange) 
+            : option.scoreChange;
+
+        for (const [key, val] of Object.entries(scores)) {
+            const sign = val > 0 ? '+' : '';
+            const valColor = val > 0 ? 'green' : 'red';
+            scoreHtml += `<span class="badge" style="background: #fff; color: #333; border: 1px solid #ccc; margin-right: 5px;">
+                            ${key.toUpperCase()}: <span style="color:${valColor}; font-weight:bold;">${sign}${val}</span>
+                          </span>`;
+        }
+    }
+
+    // Render Hasil
+    resultBox.style.display = 'block';
+    resultBox.style.background = color;
+    resultBox.style.color = textColor;
+    resultBox.style.border = `1px solid ${textColor}`;
+    
+    resultBox.innerHTML = `
+        <h4 style="margin: 0 0 10px 0;">${icon}</h4>
+        <p style="margin: 0 0 10px 0;"><strong>Respon Sistem:</strong> "${option.response}"</p>
+        <div style="margin-top: 10px;">
+            <strong>Dampak Skor:</strong><br>
+            <div style="margin-top:5px;">${scoreHtml}</div>
+        </div>
+    `;
+}
+
+        async function loadPlayerFullDetail(id) {
+            const div = document.getElementById('playerDetail');
+            div.innerHTML = '<div class="placeholder">Mengambil data dari 3 API...</div>';
+            
+            try {
+                // PARALEL FETCHING (API 33, 6, 29)
+                const [basicInfo, profileInfo, aiInfo] = await Promise.all([
+                    fetch(`${API_BASE_URL}/players/${id}`).then(r => r.json()),
+                    fetch(`${API_BASE_URL}/profiling/details?player_id=${id}`).then(r => r.json()),
+                    fetch(`${API_BASE_URL}/threshold?player_id=${id}`).then(r => r.json())
+                ]);
+
+                const cluster = profileInfo.cluster || 'Belum Profiling';
+                const badgeClass = cluster === 'HIGH_RISK_PLAYER' ? 'badge-risk' : (cluster === 'FINANCIAL_NOVICE' ? 'badge-neutral' : 'badge-safe');
+
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:20px;">
+                        <div>
+                            <h2 style="margin:0;">${basicInfo.name}</h2>
+                            <small style="color:#64748b;">ID: ${basicInfo.PlayerId} | Join: ${new Date(basicInfo.createdAt).toLocaleDateString()}</small>
                         </div>
-                    `;
-                });
-                scenarioDetailEl.innerHTML = html;
-            } catch (error) {
-                scenarioDetailEl.innerHTML = `<p>Gagal memuat: ${error.message}</p>`;
-            }
+                        <span class="badge ${badgeClass}" style="font-size:1rem; padding:8px 15px;">${cluster}</span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        
+                        <div>
+                            <div class="data-card">
+                                <span class="data-title">🔍 Kelemahan (Weak Areas)</span>
+                                <p style="margin:0; font-weight:500;">${profileInfo.weak_areas ? profileInfo.weak_areas.join(', ') : '-'}</p>
+                            </div>
+                            <div class="data-card">
+                                <span class="data-title">📈 Skor Seumur Hidup</span>
+                                <pre>${JSON.stringify(profileInfo.lifetime_scores, null, 2)}</pre>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="data-card" style="background:#1e293b; color:white; border:none;">
+                                <span class="data-title" style="color:#94a3b8;">⚙️ AI Sensitivity (Thresholds)</span>
+                                <pre style="background:transparent; padding:0;">${JSON.stringify(aiInfo.thresholds, null, 2)}</pre>
+                            </div>
+
+                            <div class="data-card" style="border: 2px dashed var(--primary); text-align:center;">
+                                <span class="data-title" style="color:var(--primary);">🤖 Test Engine Rekomendasi</span>
+                                <button class="btn btn-sm" onclick="checkAIRecommendation('${id}')" style="margin-top:10px;">Minta Saran AI</button>
+                                <div id="ai-result-box" style="margin-top:15px; text-align:left;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) { div.innerHTML = `<div style="padding:20px; color:red;">Error loading details: ${e.message}</div>`; }
         }
 
-        // === LOGIKA WIDGET 2: LEADERBOARD ===
-
-        async function loadSessions() {
-            sessionListEl.innerHTML = '<li>Loading...</li>';
+        async function checkAIRecommendation(id) {
+            const box = document.getElementById('ai-result-box');
+            box.innerHTML = '<small>AI sedang berpikir...</small>';
             try {
-                const response = await fetch(`${API_BASE_URL}/sessions/completed`); // Panggil API baru
-                const sessions = await response.json();
-                sessionListEl.innerHTML = ''; 
-                sessions.forEach(s => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>Sesi: ${s.sessionId}</strong><small>Selesai pada: ${s.ended_at}</small>`;
-                    li.onclick = () => loadLeaderboard(s.sessionId); 
-                    sessionListEl.appendChild(li);
+                const res = await fetch(`${API_BASE_URL}/recommendation/next?player_id=${id}`);
+                const rec = await res.json();
+                box.innerHTML = `
+                    <div style="background:#eff6ff; padding:10px; border-radius:6px; border-left:3px solid var(--primary);">
+                        <strong>💡 ${rec.title}</strong><br>
+                        <small>${rec.reason}</small>
+                    </div>
+                `;
+            } catch (e) { box.innerHTML = '<small style="color:red">Gagal mengambil rekomendasi.</small>'; }
+        }
+
+        // === 3. LOGIKA GAME SESSION ===
+        async function loadSessions() {
+            const container = document.getElementById('sessionList');
+            container.innerHTML = '<div style="padding:20px; color:#666;">Loading...</div>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/sessions/completed`);
+                const data = await res.json();
+                container.innerHTML = '';
+                data.forEach(s => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `<strong>Sesi ${s.sessionId.substring(0,8)}...</strong><small>${new Date(s.ended_at).toLocaleString()}</small>`;
+                    div.onclick = () => {
+                        document.querySelectorAll('#sessionList .list-item').forEach(el => el.classList.remove('active'));
+                        div.classList.add('active');
+                        loadLeaderboard(s.sessionId);
+                    };
+                    container.appendChild(div);
                 });
-            } catch (error) {
-                sessionListEl.innerHTML = `<li>Gagal memuat: ${error.message}</li>`;
-            }
+            } catch (e) { container.innerHTML = 'Gagal memuat sesi.'; }
         }
 
         async function loadLeaderboard(sessionId) {
-            leaderboardDetailEl.innerHTML = '<p>Loading leaderboard...</p>';
+            const div = document.getElementById('sessionDetail');
+            div.innerHTML = '<div class="placeholder">Loading leaderboard...</div>';
             try {
-                const response = await fetch(`${API_BASE_URL}/leaderboard?session_id=${sessionId}`); // Panggil API 31
-                const data = await response.json();
+                const res = await fetch(`${API_BASE_URL}/leaderboard?session_id=${sessionId}`);
+                const data = await res.json();
                 
-                let html = `
-                    <h3>Hasil Sesi: ${data.session_id}</h3>
-                    <table>
-                        <thead>
-                            <tr><th>Rank</th><th>Username</th><th>Skor</th></tr>
-                        </thead>
-                        <tbody>
+                let rows = data.rankings.map(r => 
+                    `<tr>
+                        <td style="width:50px; text-align:center;">${r.rank === 1 ? '🥇' : r.rank}</td>
+                        <td>${r.username} <small style="color:#999;">(${r.player_id})</small></td>
+                        <td style="font-weight:bold; color:var(--primary);">${r.overall}</td>
+                    </tr>`
+                ).join('');
+
+                div.innerHTML = `
+                    <div style="margin-bottom:20px;">
+                        <h3>🏆 Hasil Pertandingan</h3>
+                        <small>ID Sesi: ${sessionId}</small>
+                    </div>
+                    <div class="data-card" style="padding:0; overflow:hidden;">
+                        <table>
+                            <thead><tr><th style="text-align:center;">#</th><th>Player</th><th>Total Skor</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
                 `;
-                data.rankings.forEach(r => {
-                    html += `<tr><td>${r.rank}</td><td>${r.username}</td><td>${r.overall}</td></tr>`;
-                });
-                html += `</tbody></table>`;
-                leaderboardDetailEl.innerHTML = html;
-            } catch (error) {
-                leaderboardDetailEl.innerHTML = `<p>Gagal memuat: ${error.message}</p>`;
-            }
+            } catch (e) { div.innerHTML = 'Gagal memuat leaderboard.'; }
         }
 
-        // === PASANG EVENT LISTENER ===
-        loadScenariosBtn.addEventListener('click', loadScenarios);
-        loadSessionsBtn.addEventListener('click', loadSessions);
-        
-        // Muat otomatis saat halaman dibuka
-        loadScenarios();
-        loadSessions();
-        window.addEventListener('error', function (e) {
-    console.error("Global JS Error:", e.message);
-});
+        // === 4. LOGIKA SKENARIO ===
+        async function loadScenarios() {
+            const container = document.getElementById('scenarioList');
+            container.innerHTML = '<div style="padding:20px;">Loading...</div>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/scenarios`);
+                const data = await res.json();
+                container.innerHTML = '';
+                data.forEach(s => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `<strong>${s.title}</strong><small>${s.category}</small>`;
+                    div.onclick = () => {
+                        document.querySelectorAll('#scenarioList .list-item').forEach(el => el.classList.remove('active'));
+                        div.classList.add('active');
+                        loadScenarioDetail(s.id);
+                    };
+                    container.appendChild(div);
+                });
+            } catch (e) { container.innerHTML = 'Gagal memuat skenario.'; }
+        }
 
-window.addEventListener('unhandledrejection', function (e) {
-    console.error("Unhandled Promise:", e.reason);
-});
+        async function loadScenarioDetail(id) {
+            const div = document.getElementById('scenarioDetail');
+            div.innerHTML = 'Loading...';
+            try {
+                const res = await fetch(`${API_BASE_URL}/scenario/${id}`);
+                const s = await res.json();
+                div.innerHTML = `
+                    <div class="data-card">
+                        <span class="badge badge-neutral" style="margin-bottom:10px;">${s.category}</span>
+                        <h2 style="margin-top:0;">${s.title}</h2>
+                        <p style="font-size:1.1em; line-height:1.6;">${s.question}</p>
+                    </div>
+                    <h4>Opsi Jawaban:</h4>
+                    ${s.options.map(o => `
+                        <div style="background:white; border:1px solid #eee; padding:10px; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
+                            <div><strong style="color:var(--primary);">[${o.optionId}]</strong> ${o.text}</div>
+                            <div style="font-size:0.85em; color:#666;">${JSON.stringify(o.scoreChange)}</div>
+                        </div>
+                    `).join('')}
+                `;
+            } catch (e) { div.innerHTML = 'Gagal memuat detail.'; }
+        }
 
+        // INIT
+        window.onload = () => loadPlayers(); // Default tab
 
     </script>
 </body>
