@@ -9,5 +9,7 @@ Route::get('/profiling/status', [ProfilingController::class, 'status']);
 Route::post('/profiling/submit', [ProfilingController::class, 'submit']);
 Route::get('/profiling/cluster/{playerId}', [ProfilingController::class, 'cluster']);
 
-Route::get('/recommendation/next', [RecommendationController::class, 'next']);
-
+Route::prefix('recommendation')->group(function () {
+    Route::get('/next', [RecommendationController::class, 'next']);
+    Route::get('/path', [RecommendationController::class, 'path']);
+});
