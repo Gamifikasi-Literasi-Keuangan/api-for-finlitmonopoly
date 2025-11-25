@@ -140,7 +140,7 @@ class ProfilingService
             'level' => $profileData['level'],
             'traits' => json_encode($profileData['traits']),
             'weak_areas' => json_encode($profileData['weak_areas']),
-            'recommended_fokus' => $profileData['recommended_focus'][0] ?? null,
+            'recommended_focus' => $profileData['recommended_focus'][0] ?? null,
             'lifetime_scores' => json_encode($features),
             'last_updated' => now(),
         ]);
@@ -151,7 +151,7 @@ class ProfilingService
             'level' => $profileData['level'],
             'traits' => $profileData['traits'],
             'weak_areas' => $profileData['weak_areas'],
-            'recommended_focus' => $profileData['recommended_fokus'],
+            'recommended_focus' => $profileData['recommended_focus'],
             'confidence_level' => $this->ann->getConfidence(),
             'profiling_version' => 2,
             'generated_at' => now()->toISOString(),

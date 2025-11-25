@@ -15,6 +15,7 @@ class PlayerProfile extends Model
         'level',
         'traits',
         'weak_areas',
+        'recommended_focus',
         'fuzzy_scores',
         'lifetime_scores',
         'decision_history',
@@ -23,7 +24,9 @@ class PlayerProfile extends Model
         'fuzzy_scores',
         'ann_probabilities',
         'last_recommendation',
+        'last_updated',
         'thresholds',
-        'last_updated'
+        'created_at',
+        'updated_at'
     ];
 }
