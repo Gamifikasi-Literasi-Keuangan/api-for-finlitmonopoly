@@ -27,7 +27,6 @@ Route::get('/admin/config/sync', function () {
 })->name('admin.config.sync');
 
 // Admin content management routes
-
 Route::get('/admin/players/leaderboard', function () {
     return view('admin.players.leaderboard');
 })->name('admin.players.leaderboard');
@@ -58,16 +57,15 @@ Route::get('/profiling/details', [PlayerController::class, 'profilingDetails'])-
 Route::get('/profiling/cluster', [PlayerController::class, 'profilingCluster'])->name('profiling.cluster');
 Route::get('/api/players', [PlayerController::class, 'apiPlayers'])->name('api.players');
 
-
-Route::prefix('admin')->name('admin.')->group(function(){
-Route::get('rekomendasi-lanjutan', [PlayerController::class, 'rekomendasiIndex'])->name('rekomendasi.index');
-});
+// Recommendation API endpoint
 Route::post('recommendation/next', [PlayerController::class, 'recommendationNext'])->name('recommendation.next');
 
-Route::get('admin/learning_path', [PlayerController::class, 'learningPathIndex'])->name('admin.learning-path.index');
+// Rekomendasi routes (grouped for better organization)
+Route::prefix('admin/rekomendasi')->name('admin.rekomendasi.')->group(function () {
+    Route::get('/', [PlayerController::class, 'rekomendasiIndex'])->name('index');
+    Route::get('/learning-path', [PlayerController::class, 'learningPathIndex'])->name('learning-path.index');
+    Route::get('/peer-insight', [PlayerController::class, 'peerInsightIndex'])->name('peer-insight.index');
+});
 
-Route::get('admin/learning-path', function() {
-    return view('admin.learning_path.index');
-})->name('admin.learning-path.index');
-
-Route::view('admin/peer-insight', 'admin.peer_insight.index')->name('admin.peer-insight.index');
+// Backward compatibility route (optional)
+Route::get('/admin/rekomendasi-lanjutan', [PlayerController::class, 'rekomendasiIndex'])->name('admin.rekomendasi-lanjutan');

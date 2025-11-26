@@ -154,6 +154,26 @@ class PlayerController extends Controller
             ['id' => 'p002', 'name' => 'Siti'],
             ['id' => 'p003', 'name' => 'Budi'],
         ];
-        return view('admin.learning_path.index', compact('players'));
+        return view('admin.rekomendasi.learning_path.index', compact('players'));
     }
+    public function peerInsightIndex()
+{
+    $players = collect();
+
+    if (Schema::hasTable('players')) {
+        $players = DB::table('players')
+            ->join('auth_users', 'players.user_id', '=', 'auth_users.id')
+            ->select(
+                'players.PlayerId as id',
+                'players.name',
+                'players.locale',
+                'players.createdAt as created_at',
+                DB::raw("'connected' as status")
+            )
+            ->orderBy('players.name')
+            ->get();
+    }
+
+    return view('admin.rekomendasi.peer_insight.index', compact('players'));
+}
 }
