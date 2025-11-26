@@ -92,7 +92,7 @@ class ScenarioController extends Controller
         }
 
         // Intervention = true jika error streak >= 2
-        return $errorStreak >= 2;
+        return $errorStreak >= 3;
     }
 
 

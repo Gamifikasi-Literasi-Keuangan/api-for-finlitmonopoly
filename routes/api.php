@@ -8,7 +8,8 @@ use App\Http\Controllers\ScenarioController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PlayerController;
-Use App\Http\Controllers\ProfilingController;
+use App\Http\Controllers\ProfilingController;
+use App\Http\Controllers\InterventionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,9 @@ Route::get('/sessions/completed', [SessionController::class, 'getCompletedSessio
 
 // API 28: Kirim Feedback (Trigger Log & Learning)
 Route::post('/feedback/intervention', [FeedbackController::class, 'store']);
+
+// API: GET Intervention Trigger
+Route::get('/intervention/trigger', [InterventionController::class, 'trigger']);
 
 // API 30: Update Threshold Manual (Opsional, biasanya internal)
 Route::post('/threshold/update', [ThresholdController::class, 'update']);
