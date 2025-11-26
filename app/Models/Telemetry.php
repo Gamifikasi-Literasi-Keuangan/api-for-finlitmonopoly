@@ -10,14 +10,16 @@ class Telemetry extends Model
     use HasFactory;
 
     protected $table = 'telemetry';
-    public $timestamps = false; // Kita atur created_at manual
+    public $timestamps = false;
 
     protected $fillable = [
         'sessionId',
         'playerId',
+        'turn_id', 
+        'tile_id',  // <--- TAMBAHKAN INI
         'action',
-        'details',   // Disimpan sebagai TEXT/JSON
-        'metadata',  // Disimpan sebagai JSON
+        'details',
+        'metadata',
         'created_at'
     ];
 

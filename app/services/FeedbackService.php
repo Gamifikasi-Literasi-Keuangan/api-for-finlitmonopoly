@@ -22,22 +22,13 @@ class FeedbackService
         // 1. Selalu Catat Log
         $this->feedbackRepo->logIntervention($data);
 
-        $effectivenessUpdated = false;
-
-        // 2. LOGIKA AI: Jika user "bebal" (Abaikan peringatan + Salah Jawab)
-        // Maka sistem harus lebih sensitif di masa depan.
-        if (
-            ($data['player_response'] ?? '') === 'ignored' &&
-            ($data['actual_decision'] ?? '') === 'incorrect'
-        ) {
-            // Panggil logika update threshold
-            $this->thresholdService->increaseSensitivity($data['player_id']);
-            $effectivenessUpdated = true;
-        }
+        // 2. Jika butuh update threshold, bisa ditambahkan logic di sini
+        // Contoh: jika player_response = 'ignored', tingkatkan sensitivitas
+        // (Opsional, sesuai kebutuhan business logic)
 
         return [
             'logged' => true,
-            'effectiveness_updated' => $effectivenessUpdated
+            'effectiveness_updated' => false
         ];
     }
 }

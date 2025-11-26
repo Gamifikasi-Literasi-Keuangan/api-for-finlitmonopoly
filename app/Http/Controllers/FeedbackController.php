@@ -16,22 +16,37 @@ class FeedbackController extends Controller
         $this->service = $service;
     }
 
-    // IMPLEMENTASI API 28: POST /feedback/intervention
+    /**
+     * API 28: POST /feedback/intervention
+     * Menyimpan hasil intervensi/perilaku player
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'player_id' => 'required|string|exists:players,PlayerId',
-            'player_response' => 'required|string', // 'ignored', 'heeded'
-            'actual_decision' => 'required|string', // 'correct', 'incorrect'
-            'session_context' => 'required|array',
+            'intervention_id' => 'required|string',
+            'scenario_id' => 'required|string|exists:scenarios,id',
+            'player_response' => 'required|string|in:ignored,heeded,skipped'
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'ok' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $result = $this->service->processFeedback($validator->validated());
+        try {
+            $this->service->processFeedback($validator->validated());
 
-        return response()->json($result);
+            return response()->json([
+                'ok' => true
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Gagal menyimpan feedback',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
