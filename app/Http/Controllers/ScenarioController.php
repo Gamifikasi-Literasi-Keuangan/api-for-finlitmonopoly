@@ -96,35 +96,38 @@ class ScenarioController extends Controller
     }
 
 
+    /**
+     * API: POST /scenario/submit
+     * Menyimpan pilihan player terhadap skenario dan memperoleh nilai score baru
+     */
     public function submit(Request $request)
     {
         // 1. Validasi Input
         $validator = Validator::make($request->all(), [
-            'player_id' => 'required|string|exists:players,PlayerId',
             'scenario_id' => 'required|string|exists:scenarios,id',
-            'selected_option' => 'required|string', // Misal: 'A', 'B'
-            'decision_time_seconds' => 'required|integer',
-
-            // Validasi data nested (opsional tapi disarankan)
-            'session_context' => 'required|array',
-            'session_context.session_id' => 'required|string|exists:sessions,sessionId',
-            'behavioral_signals' => 'nullable|array'
+            'selected_option' => 'required|string',
+            'decision_time_seconds' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'error' => 'Validation failed',
+                'details' => $validator->errors()
+            ], 422);
         }
 
         try {
             // 2. Panggil Service untuk memproses jawaban
             $result = $this->service->processSubmission($validator->validated());
 
-            // 3. Kembalikan hasil (Skor baru, Intervensi, dll)
+            // 3. Kembalikan hasil sesuai spesifikasi V3
             return response()->json($result);
 
         } catch (\Exception $e) {
-            // Tangani error jika skenario/opsi tidak valid dalam logika bisnis
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json([
+                'error' => 'Processing failed',
+                'message' => $e->getMessage()
+            ], 400);
         }
     }
 }
