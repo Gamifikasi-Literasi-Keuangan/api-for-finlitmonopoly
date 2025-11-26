@@ -23,24 +23,76 @@ class ScenarioController extends Controller
     {
         // Ambil kolom penting saja untuk list view
         $scenarios = Scenario::select(
-            'id', 
-            'title', 
-            'category', 
-            'difficulty', 
+            'id',
+            'title',
+            'category',
+            'difficulty',
             'created_at'
         )
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json($scenarios);
     }
 
-    public function show(Scenario $scenario)
+    /**
+     * API 19: GET /scenario/{scenario_id}
+     * Mengambil data skenario untuk ditampilkan di game
+     *
+     * intervention = true jika player punya error streak >= 2
+     */
+    public function show(Request $request, Scenario $scenario)
     {
-        // Muat relasi 'options' agar pilihan jawaban (A, B, C) ikut terkirim
+        // Muat relasi 'options'
         $scenario->load('options');
 
-        return response()->json($scenario);
+        // Cek apakah perlu intervention (berdasarkan player_id dan session_id)
+        $intervention = $this->shouldShowIntervention(
+            $request->input('player_id'),
+            $request->input('session_id')
+        );
+
+        // Format response sesuai spesifikasi V3
+        return response()->json([
+            'category' => $scenario->category,
+            'title' => $scenario->title,
+            'question' => $scenario->question,
+            'options' => $scenario->options->map(function ($option) {
+                return [
+                    'id' => $option->optionId,
+                    'text' => $option->text
+                ];
+            }),
+            'intervention' => $intervention
+        ], 200);
+    }
+
+    private function shouldShowIntervention($playerId, $sessionId)
+    {
+        // Jika tidak ada player_id, tidak perlu intervention
+        if (!$playerId) {
+            return false;
+        }
+
+        // Cek 5 decision terakhir player di session ini
+        $recentDecisions = \App\Models\PlayerDecision::where('player_id', $playerId)
+            ->where('session_id', $sessionId)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Hitung error streak (consecutive errors)
+        $errorStreak = 0;
+        foreach ($recentDecisions as $decision) {
+            if (!$decision->is_correct) {
+                $errorStreak++;
+            } else {
+                break; // Stop jika ketemu jawaban benar
+            }
+        }
+
+        // Intervention = true jika error streak >= 2
+        return $errorStreak >= 2;
     }
 
 
@@ -52,7 +104,7 @@ class ScenarioController extends Controller
             'scenario_id' => 'required|string|exists:scenarios,id',
             'selected_option' => 'required|string', // Misal: 'A', 'B'
             'decision_time_seconds' => 'required|integer',
-            
+
             // Validasi data nested (opsional tapi disarankan)
             'session_context' => 'required|array',
             'session_context.session_id' => 'required|string|exists:sessions,sessionId',
