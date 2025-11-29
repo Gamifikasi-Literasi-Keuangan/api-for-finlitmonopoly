@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PlayerProfile extends Model
 {
     use HasFactory;
 
     // Tentukan nama tabel yang benar
-    protected $table = 'PlayerProfile';
+    protected $table = 'playerprofile';
 
     // Beri tahu Eloquent bahwa Primary Key BUKAN 'id'
     protected $primaryKey = 'PlayerId';

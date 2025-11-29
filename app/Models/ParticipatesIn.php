@@ -10,11 +10,8 @@ class ParticipatesIn extends Model
     use HasFactory;
 
     // Beri tahu Eloquent nama tabel yang benar
-    protected $table = 'ParticipatesIn';
-
-    // Tabel ini tidak punya timestamp 'created_at'/'updated_at'
-    public $timestamps = false;
-
+    protected $table = 'participatesin';
+    protected $fillable = ['sessionId', 'playerId', 'position', 'score', 'connection_status', 'is_ready', 'joined_at'];
     /**
      * Relasi (Langkah 6 di diagram): Baris ini milik SATU Player.
      * Ini adalah kunci untuk JOIN kita!
@@ -23,4 +20,8 @@ class ParticipatesIn extends Model
     {
         return $this->belongsTo(Player::class, 'playerId', 'PlayerId');
     }
+    public function session()
+    {
+        return $this->belongsTo(GameSession::class, 'sessionId', 'sessionId');
+    }   
 }

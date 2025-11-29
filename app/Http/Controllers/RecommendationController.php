@@ -20,12 +20,23 @@ class RecommendationController extends Controller
      */
     public function next(Request $request)
     {
-        $playerId = $request->query('player_id');
-        if (!$playerId) return response()->json(['error' => 'player_id required'], 400);
+        $user = $request->user();
+        if (!$user || !$user->player) {
+            return response()->json(['error' => 'Player profile not found'], 404);
+        }
 
-        $result = $this->recommendationService->recommendNextQuestion($playerId);
-        
-        return response()->json($result);
+        try {
+            $result = $this->recommendationService->recommendNextQuestion($user->player->PlayerId);
+            
+            if (isset($result['error'])) {
+                return response()->json($result, 404);
+            }
+
+            return response()->json($result, 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -33,13 +44,10 @@ class RecommendationController extends Controller
      */
     public function path(Request $request)
     {
-        $playerId = $request->query('player_id');
-        if (!$playerId) return response()->json(['error' => 'player_id required'], 400);
+        $user = $request->user();
+        if (!$user || !$user->player) return response()->json(['error' => 'Player not found'], 404);
 
-        $result = $this->recommendationService->getRecommendationPath($playerId);
-
-        if (!$result) return response()->json(['error' => 'Profile not found'], 404);
-        
+        $result = $this->recommendationService->getRecommendationPath($user->player->PlayerId);
         return response()->json($result);
     }
 
@@ -48,25 +56,10 @@ class RecommendationController extends Controller
      */
     public function peer(Request $request)
     {
-        $playerId = $request->query('player_id');
+        $user = $request->user();
+        if (!$user || !$user->player) return response()->json(['error' => 'Player not found'], 404);
 
-        if (!$playerId) {
-            return response()->json(['error' => 'player_id is required'], 400);
-        }
-
-        try {
-            $result = $this->recommendationService->getPeerComparison($playerId);
-
-            if (!$result) {
-                return response()->json([
-                    'error' => 'Player profile or scores not found',
-                    'player_id' => $playerId
-                ], 404);
-            }
-
-            return response()->json($result);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $result = $this->recommendationService->getPeerComparison($user->player->PlayerId);
+        return response()->json($result);
     }
 }

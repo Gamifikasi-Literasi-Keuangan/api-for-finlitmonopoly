@@ -21,8 +21,11 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        //
+        $request = request();
+        if (!$request->header('Authorization') && $request->header('X-Auth-Token')) {
+            $request->headers->set('Authorization', 'Bearer ' . $request->header('X-Auth-Token'));
+        }
     }
 }

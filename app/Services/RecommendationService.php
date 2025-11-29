@@ -25,8 +25,12 @@ class RecommendationService
             return ['error' => 'Player profile or scores not found'];
         }
 
-        $userScores = json_decode($profile->lifetime_scores, true);
-        
+        $userScores = $profile->lifetime_scores;
+
+        if (!is_array($userScores)) {
+            return ['error' => 'Invalid score format'];
+        }
+
         $weakestCategory = $this->findWeakestCategory($userScores);
         $userWeakestScore = $userScores[$weakestCategory] ?? 0;
 
@@ -56,15 +60,23 @@ class RecommendationService
             }
         }
 
-        if ($bestQuestion) {
-            return [
-                'recommendation' => $bestQuestion,
-                'similarity_score' => $maxSimilarity,
-                'reason' => "Based on your lowest score in $weakestCategory"
-            ];
+        if (!$bestQuestion && $questions->isNotEmpty()) {
+            $bestQuestion = $questions->sortBy('difficulty')->first();
         }
 
-        return ['error' => 'No suitable challenging question found'];
+        if (!$bestQuestion) {
+            return ['error' => 'Belum ada konten skenario yang tersedia di database.'];
+        }
+
+            $categoryName = ucwords(str_replace('_', ' ', $weakestCategory));
+        
+        return [
+            'scenario_id'      => $bestQuestion->id,
+            'title'            => $bestQuestion->title,
+            'reason'           => "Fokus pada area lemah: $categoryName (skor {$userWeakestScore}/100)",
+            'expected_benefit' => "+{$bestQuestion->expected_benefit} points jika diselesaikan dengan benar",
+            'peer_insight'     => $this->generatePeerInsight($weakestCategory)
+        ];
     }
 
     /**
@@ -75,7 +87,7 @@ class RecommendationService
         $profile = PlayerProfile::find($playerId);
         if (!$profile) return null;
 
-        $weakAreas = json_decode($profile->weak_areas, true) ?? ['general_basics'];
+        $weakAreas = $profile->weak_areas ?? ['general_basics'];
         
         $steps = [];
         $phase = 1;
@@ -108,7 +120,7 @@ class RecommendationService
         }
 
         // Hitung skor overall pemain ini
-        $currentScoresRaw = json_decode($currentPlayer->lifetime_scores, true);
+        $currentScoresRaw = $currentPlayer->lifetime_scores;
         $playerScore = $this->calculateOverall($currentScoresRaw);
 
         // 2. Ambil Populasi Skor (Bisa di-cache untuk performa)
@@ -163,7 +175,7 @@ class RecommendationService
         }
 
         // Insight 3: Saran Spesifik berdasarkan Kelemahan
-        $weakAreas = json_decode($currentPlayer->weak_areas, true) ?? [];
+        $weakAreas = $currentPlayer->weak_areas ?? [];
         if (!empty($weakAreas)) {
             $weakest = ucwords(str_replace('_', ' ', $weakAreas[0]));
             $insights[] = "Pemain yang fokus memperbaiki '$weakest' biasanya naik level 45% lebih cepat.";
@@ -221,13 +233,28 @@ class RecommendationService
     {
         $normalizedCategory = strtolower(str_replace([' ', '&'], ['_', 'dan'], $category));
         
-        $vector = [];
-        $template = array_fill_keys(['pendapatan', 'anggaran', 'tabungan_dan_dana_darurat', 'utang', 'investasi', 'asuransi_dan_proteksi', 'tujuan_jangka_panjang'], 0);
+        $vectorTemplate = array_fill_keys(['pendapatan', 'anggaran', 'tabungan_dan_dana_darurat', 'utang', 'investasi', 'asuransi_dan_proteksi', 'tujuan_jangka_panjang'], 0);
         
-        if (array_key_exists($normalizedCategory, $template)) {
-            $template[$normalizedCategory] = $difficulty;
+        if (array_key_exists($normalizedCategory, $vectorTemplate)) {
+            $vectorTemplate[$normalizedCategory] = $difficulty;
         }
         
-        return array_values($template);
+        return array_values($vectorTemplate);
+    }
+
+    /**
+     * Menghasilkan insight berdasarkan data peer
+     */
+    private function generatePeerInsight(string $category): string
+    {
+        // Simulasi Insight (Nanti bisa diganti query real statistik)
+        $insights = [
+            "82% pemain dengan profil serupa berhasil meningkat setelah scenario ini.",
+            "Pemain lain biasanya butuh 2x percobaan untuk materi ini, buktikan kamu lebih baik!",
+            "Top 10% pemain memprioritaskan kategori ini di awal permainan.",
+            "Menyelesaikan topik ini meningkatkan peluang 'Financial Freedom' sebesar 15%."
+        ];
+        
+        return $insights[array_rand($insights)];
     }
 }
