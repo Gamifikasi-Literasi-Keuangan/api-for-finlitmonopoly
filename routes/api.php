@@ -45,12 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/ready', [MatchmakingController::class, 'ready']);
     });
     
-    Route::prefix('recommendation')->group(function () {
-        Route::get('/next', [RecommendationController::class, 'next']);
-        Route::get('/path', [RecommendationController::class, 'path']);
-        Route::get('/peer', [RecommendationController::class, 'peer']);
-    });
-
     Route::prefix('session')->group(function () {
         Route::get('/state', [SessionController::class, 'state']);
         Route::post('/ping', [SessionController::class, 'ping']);
@@ -62,21 +56,28 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::post('/player/move', [SessionController::class, 'move']);
     });
+
     Route::get('/tile/{id}', [BoardController::class, 'getTile']);
-
-    Route::get('/performance/scores', [PerformanceController::class, 'scores']);
-
-    Route::post('/feedback/intervention', [FeedbackController::class, 'store']);
-    Route::get('/intervention/trigger', [InterventionController::class, 'trigger']);
-
+    
     Route::prefix('scenario')->group(function () {
         Route::get('/{scenario_id}', [ScenarioController::class, 'show']);
         Route::post('/submit', [ScenarioController::class, 'submit']);
     });
     Route::prefix('card')->group(function () {
         Route::get('/risk/{risk_id}', [CardController::class, 'getRiskCard']);
-        Route::get('quiz/{quiz_id}', [CardController::class, 'getQuizCard']);
         Route::get('/chance/{chance_id}', [CardController::class, 'getChanceCard']);
+        Route::get('/quiz/{quiz_id}', [CardController::class, 'getQuizCard']);
         Route::post('/quiz/submit', [CardController::class, 'submitQuiz']);
     });
+    
+    Route::prefix('recommendation')->group(function () {
+        Route::get('/next', [RecommendationController::class, 'next']);
+        Route::get('/path', [RecommendationController::class, 'path']);
+        Route::get('/peer', [RecommendationController::class, 'peer']);
+    });
+    
+    Route::post('/feedback/intervention', [FeedbackController::class, 'store']);
+    Route::get('/intervention/trigger', [InterventionController::class, 'trigger']);
+    Route::get('/performance/scores', [PerformanceController::class, 'scores']);
+    Route::get('/leaderboard', [LeaderboardController::class, 'getLeaderboard']);
 });
