@@ -13,7 +13,7 @@ class MatchmakingService
 {
     /**
      * Memasukkan pemain ke dalam antrean matchmaking berbasis sesi.
-    */
+     */
     public function joinMatchmaking(string $playerId)
     {
         return DB::transaction(function () use ($playerId) {
@@ -91,13 +91,13 @@ class MatchmakingService
 
     /**
      * Mengambil dan merakit data lengkap sebuah sesi permainan untuk dikirim ke client.
-    */
+     */
     public function getSessionData($sessionId, $statusMessage)
     {
         $session = GameSession::with('participants')->find($sessionId);
 
         // Format data player untuk response
-        $playersList = $session->participants->map(function ($p)  use ($session) {
+        $playersList = $session->participants->map(function ($p) use ($session) {
             return [
                 'player_id' => $p->playerId,
                 'username' => $p->player->name ?? 'Unknown',
@@ -121,7 +121,8 @@ class MatchmakingService
     /**
      * Memperbarui karakter yang dipilih pemain beserta avatar visualnya.
      */
-    public function updatePlayerCharacter(string $playerId, string $characterId) {
+    public function updatePlayerCharacter(string $playerId, string $characterId)
+    {
         $player = Player::find($playerId);
         if (!$player) {
             throw new (\Exception(message: "Player not found"));
@@ -130,19 +131,20 @@ class MatchmakingService
         $player->avatar_url = $this->getAvatarUrlForCharacter($characterId);
         $player->save();
 
-        return [ 'ok' => true ];
+        return ['ok' => true];
     }
 
     /**
      * Mendapatkan URL Avatar berdasarkan ID Karakter
      */
-    private function getAvatarUrlForCharacter(int $id) {
+    private function getAvatarUrlForCharacter(int $id)
+    {
         return "https://api.dicebear.com/7.x/adventurer/svg?seed=Char_" . $id;
     }
 
     /**
      * Mengambil status terbaru matchmaking/lobi untuk seorang pemain.
-    */
+     */
     public function getMatchmakingStatus(string $playerId)
     {
         $participation = ParticipatesIn::where('playerId', $playerId)
@@ -156,7 +158,7 @@ class MatchmakingService
         }
 
         $session = GameSession::with('participants')->find($participation->sessionId);
-        
+
         $totalPlayers = $session->participants->count();
         $readyCount = $session->participants->where('is_ready', true)->count();
         $maxPlayers = $session->max_players;
@@ -198,8 +200,9 @@ class MatchmakingService
 
     /**
      * Menandai status kesiapan (ready / not ready) seorang pemain di sebuah session yang masih dalam status 'waiting'.
-    */
-    public function setPlayerReady(string $playerId, bool $isReady) {
+     */
+    public function setPlayerReady(string $playerId, bool $isReady)
+    {
         $participation = ParticipatesIn::where('playerId', $playerId)
             ->WhereHas('session', function ($query) {
                 $query->where('status', 'waiting');
@@ -212,6 +215,28 @@ class MatchmakingService
         $participation->is_ready = $isReady;
         $participation->save();
 
-        return [ 'ok' => true ];
+        // Cek apakah semua pemain sudah ready
+        $session = $participation->session; // Eager load
+        $participants = $session->participants; // Relasi HasMany
+
+        $total = $participants->count();
+        $readyCount = $participants->where('is_ready', true)->count();
+
+        // Jika sudah penuh dan semua ready, start session
+        if ($total >= $session->max_players && $readyCount == $total) {
+            $session->status = 'active';
+            $session->started_at = now();
+            // Set giliran pertama (misal ke host atau random)
+            $session->current_player_id = $session->host_player_id;
+            // set current_turn = 1
+            $session->current_turn = 1;
+
+            // Simpan JSON state awal jika perlu
+            // $session->game_state = json_encode(['turn_phase' => 'start', ...]);
+
+            $session->save();
+        }
+
+        return ['ok' => true];
     }
 }
