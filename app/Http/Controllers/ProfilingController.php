@@ -45,7 +45,7 @@ class ProfilingController extends Controller
         $result = $this->profilingService->saveOnboardingAnswers([
             'player_id' => $playerId,
             'answers' => $validatedData['answers'],
-            'profiling_done' => $validatedData['profiling_done'] ?? false
+            'profiling_done' => $validatedData['profiling_done'] ?? true
         ]);
         return response()->json($result);
     }
