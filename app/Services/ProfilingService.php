@@ -180,7 +180,9 @@ class ProfilingService
 
         $features = json_decode($input->feature, true);
         $linguisticLabels = $this->fuzzy->categorize($features);
-        $finalClass = $this->ann->getFinalClass($linguisticLabels);
+        
+        // Prediksi menggunakan ANN dengan PHP-ML
+        $finalClass = $this->ann->predict($linguisticLabels);
         $profileData = self::CLUSTER_PROFILES[$finalClass] ?? self::CLUSTER_PROFILES['default'];
 
         asort($features);

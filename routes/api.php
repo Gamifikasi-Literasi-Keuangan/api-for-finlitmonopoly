@@ -15,6 +15,7 @@ use App\Http\Controllers\InterventionController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\ANNController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,4 +81,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/intervention/trigger', [InterventionController::class, 'trigger']);
     Route::get('/performance/scores', [PerformanceController::class, 'scores']);
     Route::get('/leaderboard', [LeaderboardController::class, 'getLeaderboard']);
+});
+
+// Admin/Development routes for ANN training and testing
+Route::prefix('ann')->group(function () {
+    Route::post('/train', [ANNController::class, 'train']);
+    Route::post('/test', [ANNController::class, 'test']);
+    Route::get('/evaluate', [ANNController::class, 'evaluate']);
 });
