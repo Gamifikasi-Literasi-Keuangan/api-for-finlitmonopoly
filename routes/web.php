@@ -105,3 +105,6 @@ Route::middleware(['auth'])->group(function () {
 | Backward compatibility alias: /leaderboard
 |--------------------------------------------------------------------------
 */
+Route::get('/leaderboard', function () {
+    return view('admin.players.leaderboard');
+})->name('leaderboard');
