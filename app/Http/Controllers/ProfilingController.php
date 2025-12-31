@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProfilingSubmitRequest;
 use App\Services\ProfilingService;
+use App\Services\AI\FuzzyService;
 
 class ProfilingController extends Controller
 {
@@ -28,6 +29,15 @@ class ProfilingController extends Controller
         }
         $playerId = $user->player->PlayerId;
         $result = $this->profilingService->getProfilingStatus($playerId);
+        return response()->json($result);
+    }
+
+    /**
+     * Mendapatkan daftar pertanyaan profiling beserta opsi-opsinya.
+     */
+     public function questions()
+    {
+        $result = $this->profilingService->getActiveProfilingQuestions();
         return response()->json($result);
     }
 
@@ -67,4 +77,34 @@ class ProfilingController extends Controller
         }
         return response()->json($result, 200);
     }
+
+    /**
+     * Debug - Menjalankan Logika Fuzzy
+     * Fuzzifikasi, Rule Evaluation, Defuzzifikasi
+     */
+    public function debugFuzzy(Request $request, FuzzyService $fuzzyService)
+    {
+        $data = $request->validate([
+            'player_id' => 'required|string',
+            'features'  => 'required|array',
+            'debug'     => 'required|boolean',
+
+            // validasi setiap feature numeric
+            'features.*' => 'required|numeric|min:0|max:100',
+        ]);
+
+        // Jalankan FUZZY SAJA (tanpa ANN)
+        $result = $fuzzyService->categorize(
+            $data['player_id'],
+            $data['features'],
+            $data['debug']
+        );
+
+        return response()->json([
+            'status'  => 'ok',
+            'message' => 'Fuzzy profiling test (ANN not executed)',
+            'result'  => $result,
+        ]);
+    }
 }
+

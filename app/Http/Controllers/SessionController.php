@@ -165,4 +165,28 @@ class SessionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Handle leaving/finishing the session
+     */
+    public function leave(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->player) {
+            return response()->json(['error' => 'Player profile not found'], 404);
+        }
+
+        try {
+            $result = $this->sessionService->leaveSession($user->player->PlayerId);
+
+            if (isset($result['error'])) {
+                return response()->json($result, 400);
+            }
+
+            return response()->json($result, 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

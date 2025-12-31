@@ -70,10 +70,10 @@ class SessionService
             $pScore = [
                 "pendapatan" => $latestScores['pendapatan'] ?? 0,
                 "anggaran" => $latestScores['anggaran'] ?? 0,
-                "tabungan" => $latestScores['tabungan_dan_dana_darurat'] ?? 0,
+                "tabungan_dan_dana_darurat" => $latestScores['tabungan_dan_dana_darurat'] ?? 0,
                 "utang" => $latestScores['utang'] ?? 0,
                 "investasi" => $latestScores['investasi'] ?? 0,
-                "asuransi" => $latestScores['asuransi_dan_proteksi'] ?? 0,
+                "asuransi_dan_proteksi" => $latestScores['asuransi_dan_proteksi'] ?? 0,
                 "tujuan_jangka_panjang" => $latestScores['tujuan_jangka_panjang'] ?? 0,
                 "overall" => $latestProfile->level ?? 0
             ];
@@ -361,5 +361,44 @@ class SessionService
             'next_turn_player_id' => $nextPlayer->playerId,
             'turn_number' => $session->current_turn
         ];
+    }
+
+    /**
+     * Finalize and leave session
+     * Updates player profile with final ANN evaluation
+     */
+    public function leaveSession(string $playerId)
+    {
+        return DB::transaction(function () use ($playerId) {
+            $participation = ParticipatesIn::where('playerId', $playerId)
+                ->whereHas('session', fn($q) => $q->whereIn('status', ['active', 'waiting']))
+                ->first();
+
+            if (!$participation) {
+                return ['error' => 'Player is not in any session'];
+            }
+
+            $sessionId = $participation->sessionId;
+            $session = $participation->session;
+
+            // Mark player as disconnected
+            $participation->connection_status = 'disconnected';
+            $participation->save();
+
+            // Check if all players left
+            $remainingPlayers = ParticipatesIn::where('sessionId', $sessionId)
+                ->where('connection_status', 'connected')
+                ->count();
+
+            if ($remainingPlayers === 0) {
+                $session->status = 'completed';
+                $session->save();
+            }
+
+            return [
+                'message' => 'Successfully left session',
+                'session_id' => $sessionId
+            ];
+        });
     }
 }

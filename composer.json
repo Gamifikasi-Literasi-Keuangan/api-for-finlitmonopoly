@@ -7,18 +7,19 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-bcmath": "*",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-xml": "*",
+        "ext-zip": "*",
         "google/apiclient": "^2.18",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
-        "ext-pdo": "*",
-        "ext-pdo_mysql": "*",
-        "ext-bcmath": "*",
-        "ext-mbstring": "*",
-        "ext-xml": "*",
-        "ext-curl": "*",
-        "ext-zip": "*",
-        "ext-gd": "*"
+        "php-ai/php-ml": "^0.10.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

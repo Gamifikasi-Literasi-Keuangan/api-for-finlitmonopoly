@@ -4,22 +4,6 @@ namespace App\Services\AI;
 
 class FuzzyService
 {
-    private const STANDARD_LABELS = [
-        'Sangat Rendah',
-        'Rendah',
-        'Sedang',
-        'Tinggi',
-        'Sangat Tinggi'
-    ];
-    private const EXTENDED_LABELS = [
-        'Tidak Ada',
-        'Sangat Rendah',
-        'Rendah',
-        'Sedang',
-        'Tinggi',
-        'Sangat Tinggi'
-    ];
-
     private const CATEGORIES_WITH_ZERO = [
         'anggaran',
         'investasi',
@@ -29,61 +13,147 @@ class FuzzyService
     ];
 
     /**
-     * Mengategorikan input berdasarkan logika fuzzy dan mengembalikan hasilnya
+     * Mengkategorikan input berdasarkan logika fuzzy dan mengembalikan hasilnya
      */
-    public function categorize(array $input): array
+    public function categorize(string $playerId, array $numericFeatures, bool $debug=false): array
     {
-        $categorizedOutput = [];
-        foreach ($input as $category => $score) {
-            $normalizedKey = strtolower(str_replace(' ', '_', $category));
-            if (in_array($normalizedKey, self::CATEGORIES_WITH_ZERO)) {
-                $categorizedOutput[$category] = $this->mapScoreToExtendedLabel($score);
-            } else {
-                $categorizedOutput[$category] = $this->mapScoreToStandardLabel($score);
-            }
+        $fuzzyFeatures = [];
+        foreach ($numericFeatures as $feature => $value) {
+            $normalized = strtolower($feature);
+            $isExtended = in_array($normalized, self::CATEGORIES_WITH_ZERO);
+
+            $fuzzyFeatures[$feature] = $this->fuzzifyFeature($value,$isExtended);
         }
-        return $categorizedOutput;
+
+        $fuzzyCategories = $this->extractFinalLabels($fuzzyFeatures);
+
+        $ruleResults = app(FuzzyRule::class);
+
+        // $classStrengths = $ruleResults->evaluate($fuzzyFeatures);
+        // $fuzzyResult = $this->defuzzifyClass($classStrengths);
+
+        if ($debug) {
+            $ruleEval = $ruleResults->evaluateWithDebug($fuzzyFeatures);
+
+            $classStrengths = $ruleEval['class_strengths'];
+            $ruleDebug = $ruleEval['rule_debug'];
+
+            $fuzzyResult = $this->defuzzifyClass($classStrengths);
+
+            return [
+                'player_id' => $playerId,
+                'input' => [
+                    'numeric_features' => $numericFeatures
+                ],
+                'fuzzification' => $fuzzyFeatures,
+                'rule_evaluation' => [
+                    'rules_per_class' => $ruleDebug,
+                    'class_strengths' => $classStrengths
+                ],
+                'defuzzification' => $fuzzyResult,
+                'for_ann' => [
+                    'fuzzy_categories' => $fuzzyCategories
+                ],
+            ];
+        }
+        else {
+            $classStrengths = $ruleResults->evaluate($fuzzyFeatures);
+            $fuzzyResult = $this->defuzzifyClass($classStrengths);
+
+            return [
+                'player_id'        => $playerId,
+                'numeric_features' => $numericFeatures,
+                'fuzzy_categories' => $fuzzyCategories,
+                'final_result'     => $fuzzyResult,
+            ];
+        }
+    }
+
+
+    /**
+     * Proses Fuzzifikasi untuk satu fitur
+     */
+    protected function fuzzifyFeature(float $value, bool $isExtended): array
+    {
+        $value = max(0, min(100, $value));
+        $degrees = [];
+
+        if ($isExtended) {
+            $degrees['Tidak Ada'] = $value < 1 ? 1.0 : 0.0;
+        }
+
+        // Membership Functions untuk kategori fuzzy
+        $ranges = [
+            'Sangat Rendah' => [0, 0, 20, 40],
+            'Rendah'        => [20, 35, 50, 65],
+            'Sedang'        => [50, 65, 80, 90],
+            'Tinggi'        => [80, 90, 95, 100],
+            'Sangat Tinggi' => [90, 95, 100, 105],
+
+        ];
+
+        foreach ($ranges as $label => [$a, $b, $c, $d]) {
+            $degrees[$label] = $this->trapezoidal($value, $a, $b, $c, $d);
+        }
+
+        return [
+            'input_value' => $value,
+            'is_extended' => $isExtended,
+            'degrees' => $degrees,
+            'final_label' => $this->resolveFinalClass($degrees)
+        ];
     }
 
     /**
-     * Mengubah skor menjadi label standar berdasarkan ambang batas yang telah ditentukan
+     * Fungsi trapesium untuk menghitung derajat keanggotaan
      */
-    private function mapScoreToStandardLabel($score): string
+    private function trapezoidal(float $x, float $a, float $b, float $c, float $d): float
     {
-        $score = max(0, min(100, $score));
-        $thresholds = [20, 40, 60, 80, 100];
-        $label = self::STANDARD_LABELS[count(self::STANDARD_LABELS) - 1];
-
-        foreach ($thresholds as $i => $t) {
-            if ($score <= $t) {
-                $label = self::STANDARD_LABELS[$i];
-                break;
-            }
+        if ($x <= $a || $x > $d) {
+            return 0.0;
+        } elseif ($x >= $b && $x <= $c) {
+            return 1.0;
+        } elseif ($x > $a && $x < $b) {
+            return ($x - $a) / ($b - $a);
+        } elseif ($x > $c && $x < $d) {
+            return ($d - $x) / ($d - $c);
         }
 
-        return $label;
+        return 0.0;
     }
 
-/**
-     * Mapping untuk kategori extended (0 adalah 'Tidak Ada')
-     */
-    private function mapScoreToExtendedLabel($score): string
+    private function extractFinalLabels(array $fuzzyFeatures): array
     {
-        $score = max(0, min(100, $score));
-        if ($score < 1) {
-            return self::EXTENDED_LABELS[0];
+        $labels = [];
+
+        foreach ($fuzzyFeatures as $feature => $data) {
+            $labels[$feature] = $data['final_label'];
         }
 
-        $thresholds = [20, 40, 60, 80, 100];
-        $label = self::EXTENDED_LABELS[count(self::EXTENDED_LABELS) - 1];
+        return $labels;
+    }
 
-        foreach ($thresholds as $i => $t) {
-            if ($score <= $t) {
-                $label = self::EXTENDED_LABELS[$i + 1];
-                break;
-            }
-        }
 
-        return $label;
+    /**
+     * Menentukan kelas akhir berdasarkan derajat keanggotaan
+     */
+    private function resolveFinalClass(array $degrees): string
+    {
+        arsort($degrees);
+        return array_key_first($degrees);
+    }
+
+    /**
+     * Defuzzifikasi
+     */
+    private function defuzzifyClass(array $classStrengths): array
+    {
+        arsort($classStrengths);
+        $class = array_key_first($classStrengths);
+
+        return [
+            'class'        => $class,
+            'confidence'   => round($classStrengths[$class], 2),
+        ];
     }
 }

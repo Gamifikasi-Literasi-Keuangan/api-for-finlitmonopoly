@@ -16,7 +16,7 @@ return [
     'allowed_origins' => [
         'http://localhost:3000', // <-- Untuk development React/Vue
         'http://127.0.0.1:5500', // <-- Untuk development file HTML biasa
-        // 'https*://game-anda.com', // <-- Nanti saat sudah production
+        'https://project-finlitmon-demo-api.netlify.app' // <-- Nanti saat sudah production
     ],
 
     // ATAU (jika ingin gampang untuk tes, tapi tidak aman):

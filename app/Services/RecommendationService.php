@@ -37,6 +37,9 @@ class RecommendationService
 
         $weakestCategory = $this->findWeakestCategory($userScores);
         $userWeakestScore = $userScores[$weakestCategory] ?? 0;
+        
+        // Konversi user score (0-100) ke difficulty level (1-3)
+        $userLevel = $this->convertScoreToLevel($userWeakestScore);
 
         $questions = DB::table('scenarios')
             ->where('category', $weakestCategory)
@@ -51,7 +54,8 @@ class RecommendationService
         $userVector = $this->prepareVector($userScores);
 
         foreach ($questions as $question) {
-            if ($question->difficulty <= $userWeakestScore) {
+            // Bandingkan difficulty skenario dengan level pemain (keduanya skala 1-3)
+            if ($question->difficulty <= $userLevel) {
                 continue;
             }
 
@@ -320,5 +324,24 @@ class RecommendationService
     {
         $categoryName = ucwords(str_replace(['_dan_', '_'], [' & ', ' '], $category));
         return "Insight: Mayoritas pemain berhasil meningkatkan skor $categoryName mereka dalam 3 sesi latihan.";
+    }
+
+    /**
+     * Konversi skor lifetime (0-100) ke level difficulty (1-3)
+     * 
+     * @param float $score Skor pemain dalam rentang 0-100
+     * @return int Level difficulty (1=Pemula, 2=Intermediate, 3=Advanced)
+     */
+    private function convertScoreToLevel(float $score): int
+    {
+        if ($score < 34) {
+            return 1; // Pemula (0-33)
+        }
+        
+        if ($score < 67) {
+            return 2; // Intermediate (34-66)
+        }
+        
+        return 3; // Advanced (67-100)
     }
 }

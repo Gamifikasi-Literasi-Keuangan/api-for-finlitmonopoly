@@ -1,0 +1,1233 @@
+{
+	"info": {
+		"_postman_id": "388feb6a-a937-4ac0-855f-3ab920862cda",
+		"name": "Game API Testing Collection",
+		"description": "Collection untuk testing API Gamifikasi Literasi Keuangan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47767746"
+	},
+	"item": [
+		{
+			"name": "🔑 Authentication",
+			"item": [
+				{
+					"name": "Google Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// 1. Ambil respon JSON dari API\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// 2. Cek di console (opsional, untuk debugging)\r",
+									"console.log(jsonData);\r",
+									"\r",
+									"// 3. Simpan token ke Collection Variable\r",
+									"// PENTING: Ganti 'access_token' sesuai dengan key di respon JSON Anda\r",
+									"// Jika responnya { \"token\": \"...\" }, ganti jadi jsonData.token\r",
+									"pm.collectionVariables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"google_id_token\": \"eyJhGciOq1\",\n  \"platform\": \"Android\",\n  \"locale\": \"id_ID\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/google",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google"
+							]
+						},
+						"description": "Login menggunakan Google ID Token. Simpan token yang dikembalikan untuk request selanjutnya."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"YOUR_REFRESH_TOKEN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "⚙️ Configuration",
+			"item": [
+				{
+					"name": "Get Game Config",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/config/game",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"config",
+								"game"
+							]
+						},
+						"description": "Mengambil konfigurasi game global (public endpoint)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📊 Profiling (AI)",
+			"item": [
+				{
+					"name": "Check Profiling Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/profiling/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profiling",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Profiling Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answers\": [\"A\", \"B\", \"C\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profiling/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profiling",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get AI Cluster Result",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/profiling/cluster",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profiling",
+								"cluster"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profiling Question",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profiling/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profiling",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👥 Matchmaking & Lobby",
+			"item": [
+				{
+					"name": "Join/Create Lobby",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/matchmaking/join",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"matchmaking",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Character/Avatar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"character_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/matchmaking/character/select",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"matchmaking",
+								"character",
+								"select"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lobby Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/matchmaking/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"matchmaking",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Ready Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_ready\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/matchmaking/ready",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"matchmaking",
+								"ready"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🎮 Game Session",
+			"item": [
+				{
+					"name": "Get Game State",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/state",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ping (Keep Alive)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"timestamp\": \"2024-12-04T10:30:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/ping",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/leave",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"leave"
+							]
+						},
+						"description": "Keluar dari sesi tanpa evaluasi final"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🎲 Turn & Actions",
+			"item": [
+				{
+					"name": "Start Turn",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/turn/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"turn",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Roll Dice",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/turn/roll",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"turn",
+								"roll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Turn Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/turn/current",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"turn",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Move Player",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/player/move",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"player",
+								"move"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "End Turn",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/turn/end",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"turn",
+								"end"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🎯 Content & Scenarios",
+			"item": [
+				{
+					"name": "Get Tile Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tile/12",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tile",
+								"12"
+							]
+						},
+						"description": "Ganti '1' dengan ID tile yang valid"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Scenario Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/scenario/SCN_UTANG_07",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"scenario",
+								"SCN_UTANG_07"
+							]
+						},
+						"description": "Ganti '1' dengan ID scenario yang valid"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Scenario Answer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scenario_id\": \"SCN_UTANG_07\",\n    \"selected_option\": \"A\",\n    \"decision_time_seconds\": 4.5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/scenario/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"scenario",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quiz Card",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/card/quiz/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"card",
+								"quiz",
+								"1"
+							]
+						},
+						"description": "Ganti '1' dengan ID quiz yang valid"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Quiz Answer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quiz_id\": \"quiz_01\",\n    \"selected_option\": \"B\",\n    \"decision_time_seconds\": 3.2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/card/quiz/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"card",
+								"quiz",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Risk Card",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/card/risk/risk_01",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"card",
+								"risk",
+								"risk_01"
+							]
+						},
+						"description": "Mengambil data Risk Card dan langsung apply perubahan skor (tidak perlu submit)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chance Card",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/card/chance/chance_01",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"card",
+								"chance",
+								"chance_01"
+							]
+						},
+						"description": "Mengambil data Chance Card dan langsung apply perubahan skor (tidak perlu submit)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🤖 AI Prediction (Real-Time)",
+			"item": [
+				{
+					"name": "Get Current Prediction",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/predict/current",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"predict",
+								"current"
+							]
+						},
+						"description": "Mendapatkan prediksi cluster real-time tanpa mengubah profil. Useful untuk tracking progress during gameplay."
+					},
+					"response": []
+				},
+				{
+					"name": "Analyze Pause State",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/analysis/pause",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"analysis",
+								"pause"
+							]
+						},
+						"description": "Analisis lengkap saat pemain pause/berhenti sementara. Include statistics, prediction, dan recommendations."
+					},
+					"response": []
+				},
+				{
+					"name": "Finish Session (Final Evaluation)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session_id\": \"sess_abc123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/session/finish",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"finish"
+							]
+						},
+						"description": "⚠️ IMPORTANT: Get session_id first from GET /session/state!\n\nFinalisasi sesi dengan evaluasi final ANN. UPDATES PROFILE PERMANENTLY. Includes comprehensive report, skill improvements, and achievement message.\n\n📝 Steps:\n1. Call GET /session/state to get session_id\n2. Copy session_id from response (format: sess_xxxxx)\n3. Use that session_id in this request body\n\n❌ WRONG: Using player_id (player_xxxxx)\n✅ CORRECT: Using session_id (sess_xxxxx)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📈 Performance & Analytics",
+			"item": [
+				{
+					"name": "Get Leaderboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/leaderboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"leaderboard"
+							]
+						},
+						"description": "Endpoint ini mungkin bisa diakses tanpa auth"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Performance Scores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/performance/scores",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"performance",
+								"scores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Next Recommendation",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recommendation/next",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recommendation",
+								"next"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recommendation Path",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recommendation/path",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recommendation",
+								"path"
+							]
+						},
+						"description": "Mendapatkan roadmap improvement untuk player"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Peer Comparison",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recommendation/peer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recommendation",
+								"peer"
+							]
+						},
+						"description": "Mendapatkan perbandingan dengan player serupa"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Risk Intervention",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/intervention/trigger",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"intervention",
+								"trigger"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Intervention Feedback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"intervention_id\": \"intv_01\",\n    \"scenario_id\": \"sc_utang_01\",\n    \"player_response\": \"heed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/feedback/intervention",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"feedback",
+								"intervention"
+							]
+						},
+						"description": "Menyimpan feedback player terhadap intervention yang diberikan"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

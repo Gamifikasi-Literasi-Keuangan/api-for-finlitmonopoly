@@ -6,13 +6,17 @@ use App\Services\AI\FuzzyService;
 use App\Services\AI\ANNService;
 use App\Models\PlayerProfile;
 use App\Models\ProfilingInput;
+use App\Repositories\ProfilingRepository;
+use Illuminate\Support\Facades\Log;
 
 class ProfilingService
 {
     protected $fuzzy;
     protected $ann;
+    protected $profilingRepository;
 
-    private const CLUSTER_PROFILES = [
+
+    public const CLUSTER_PROFILES = [
         'Financial Novice' => [
             'display_name' => 'HIGH RISK PLAYER',
             'level' => 'Critical',
@@ -54,9 +58,11 @@ class ProfilingService
     public function __construct(
         FuzzyService $fuzzy,
         ANNService $ann,
+        ProfilingRepository $profilingRepository
     ) {
         $this->fuzzy = $fuzzy;
         $this->ann = $ann;
+        $this->profilingRepository = $profilingRepository;
     }
 
     /**
@@ -101,12 +107,38 @@ class ProfilingService
         ];
     }
 
+     /**
+     * Mengambil daftar pertanyaan profiling yang aktif
+     */
+    public function getActiveProfilingQuestions(): array
+    {
+        $questions = $this->profilingRepository->getProfilingQuestions();
+        return $questions->map(function ($question) {
+            return [
+                'question_code' => $question->question_code,
+                'text' => $question->question_text,
+                'options' => $question->options
+                    ->map(function ($option) {
+                        return [
+                            'option_token' => $option->option_token,
+                            'text' => $option->option_text,
+                        ];
+                    })
+                    ->shuffle()
+                    ->values(),
+            ];
+        })->values()->toArray();
+    }
+
     /**
      * Menyimpan jawaban onboarding pemain dan, bila diminta,
      * memicu proses profiling (clustering) secara otomatis.
      */
     public function saveOnboardingAnswers(array $input)
     {
+        $playerId = $input['player_id'];
+        $answers  = $input['answers'];
+
         PlayerProfile::updateOrCreate(
             ['PlayerId' => $input['player_id']],
             [
@@ -114,6 +146,28 @@ class ProfilingService
                 'last_updated' => now(),
             ]
         );
+
+        // Menyimpan jawaban satu per satu  
+        foreach ($answers as $answer) {
+            $questionCode = $answer['question_code'];
+            $optionToken  = $answer['option_token'];
+
+            $option = $this->profilingRepository
+                ->getOptionByToken($questionCode, $optionToken);
+
+            if (!$option) {
+                throw new \Exception(
+                    "Invalid option token for question {$questionCode}"
+                );
+            }
+
+            $this->profilingRepository->saveAnswer(
+                $playerId,
+                $option->question_id,
+                $option->option_code 
+            );
+        }
+
         if ($input['player_id'] === 'player_dummy_profiling_infinite') {
             $calculatedFeatures = [
                 'pendapatan' => 30,
@@ -125,32 +179,78 @@ class ProfilingService
                 'tujuan_jangka_panjang' => 30
             ];
         } else {
-            $calculatedFeatures = [
-                'pendapatan' => 50,
-                'anggaran' => 60,
-                'tabungan_dan_dana_darurat' => 40,
-                'utang' => 20,
-                'investasi' => 10,
-                'asuransi_dan_proteksi' => 30,
-                'tujuan_jangka_panjang' => 50
-            ];
+            $calculatedFeatures = $this->calculateFeaturesFromAnswers($playerId);
         }
+
         $profilingInput = ProfilingInput::create([
-            'player_id' => $input['player_id'],
+            'player_id' => $playerId,
             'feature' => json_encode($calculatedFeatures),
             'created_at' => now(),
         ]);
+
+        // return ['ok' => true];
 
         $profilingResult = null;
         if (!empty($input['profiling_done']) && $input['profiling_done'] === true) {
             try {
                 $profilingResult = $this->runProfilingCluster($input['player_id'], $profilingInput);
             } catch (\Exception $e) {
-                \Log::error("Profiling calculation failed for {$input['player_id']}: " . $e->getMessage());
+                Log::error("Profiling calculation failed for {$input['player_id']}: " . $e->getMessage());
                 return ['ok' => false, 'error' => $e->getMessage()];
             }
         }
         return ['ok' => true, 'profiling_result' => $profilingResult];
+    }
+
+    /**
+     * Menghitung fitur dari jawaban onboarding pemain.
+     * Menggunakan sistem poin yang telah ditentukan.
+     */
+    public function calculateFeaturesFromAnswers(string $playerId): array
+    {
+        // Mengambil semua pertanyaan aktif
+        $questions = $this->profilingRepository->getProfilingQuestions();
+        
+        // Mengambil semua jawaban pemain
+        $answers = $this->profilingRepository->getAnswersByPlayerId($playerId)
+            ->keyBy('question_id');
+        
+        $scores = [];
+
+        foreach ($questions as $question) {
+            foreach ($question->aspects as $aspect) {
+                $scores[$aspect->aspect_key] ??= 0;
+            }
+        }
+
+        // Menghitung Skor Pemain berdasarkan sistem poin
+        foreach ($questions as $question) {
+
+            if (!isset($answers[$question->id])) {
+                continue;
+            }
+
+            $answer = $answers[$question->id];
+            $optionScore = $this->profilingRepository
+                ->getOptionScore($question->id, $answer->answer);
+
+            if ($optionScore === null) {
+                continue;
+            }
+
+            // Normalisasi (0-100)
+            $normalizedScore = ($optionScore / $question->max_score) * 100;
+
+            foreach ($question->aspects as $aspect) {
+                if ($aspect->aspect_key === 'utang') {
+                    $scores['utang'] = 100 - $normalizedScore;
+                } else {
+                    $scores[$aspect->aspect_key] = $normalizedScore;
+                }
+            }
+        }
+
+        return $scores;
     }
 
     /**
@@ -179,8 +279,13 @@ class ProfilingService
         }
 
         $features = json_decode($input->feature, true);
-        $linguisticLabels = $this->fuzzy->categorize($features);
-        $finalClass = $this->ann->getFinalClass($linguisticLabels);
+        
+        #Profiling dengan Fuzzy Logic
+        $fuzzyOutput = $this->fuzzy->categorize($playerId, $features);
+        $linguisticLabels = $fuzzyOutput['fuzzy_categories'];
+        
+        #Profiling dengan ANN dengan PHP-ML
+        $finalClass = $this->ann->predict($linguisticLabels);
         $profileData = self::CLUSTER_PROFILES[$finalClass] ?? self::CLUSTER_PROFILES['default'];
 
         asort($features);

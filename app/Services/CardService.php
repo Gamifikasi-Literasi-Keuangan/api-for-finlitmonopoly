@@ -8,16 +8,22 @@ use App\Models\PlayerProfile;
 use App\Models\PlayerDecision;
 use App\Models\ParticipatesIn;
 use App\Services\InterventionService;
+use App\Services\PredictionService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CardService
 {
     protected $interventionService;
+    protected $predictionService;
 
-    // Inject InterventionService via Constructor
-    public function __construct(InterventionService $interventionService)
-    {
+    // Inject InterventionService and PredictionService via Constructor
+    public function __construct(
+        InterventionService $interventionService,
+        PredictionService $predictionService
+    ) {
         $this->interventionService = $interventionService;
+        $this->predictionService = $predictionService;
     }
 
     /**
@@ -344,13 +350,36 @@ class CardService
             // 6. Catat History Keputusan
             $this->logQuizDecision($playerId, $quizId, $selectedOption, $isCorrect, $scoreChange, $data['decision_time_seconds'] ?? 0);
 
-            // 7. Format Response
-            return [
+            // 7. Get real-time prediction after quiz answer
+            $prediction = null;
+            try {
+                $prediction = $this->predictionService->getCurrentPrediction($playerId);
+                if (isset($prediction['error'])) {
+                    $prediction = null;
+                }
+            } catch (\Exception $e) {
+                Log::warning("Prediction failed after quiz answer: " . $e->getMessage());
+            }
+
+            // 8. Format Response
+            $response = [
                 'correct' => $isCorrect,
                 'score_change' => $scoreChange,
                 'affected_score' => $categoryLabel,
                 'new_score_value' => $newVal
             ];
+
+            // Add prediction data if available
+            if ($prediction) {
+                $response['prediction'] = [
+                    'current_cluster' => $prediction['predicted_cluster'] ?? null,
+                    'cluster_changed' => $prediction['cluster_changed'] ?? false,
+                    'weak_areas' => $prediction['weak_areas'] ?? [],
+                    'level' => $prediction['level'] ?? null
+                ];
+            }
+
+            return $response;
         });
     }
 

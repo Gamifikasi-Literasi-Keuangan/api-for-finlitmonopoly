@@ -1,9 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\ProfilingQuestion;
+use App\Repositories\ProfilingRepository;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\LeaderboardController;
+use App\Services\ProfilingService;
+use App\Services\AI\FuzzyService;
 
 Route::get('/', function () {
     return view('welcome');

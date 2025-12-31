@@ -103,19 +103,18 @@ class ANNController extends Controller
     private function normalizeData($data)
     {
         $normalizer = new Normalizer(Normalizer::NORM_L2);
-        $normalizedData = [];
+        $normalizer->transform($data);
         
-        foreach ($data as $row) {
-            $normalizedData[] = $normalizer->normalize($row);
-        }
-        
-        return $normalizedData;
+        return $data;
     }
 
     // Fungsi untuk melatih model ANN
     public function train()
     {
-        // Data training dari Excel yang Anda berikan
+        // Data training dari unified dataset
+        $trainingData = \App\Services\AI\TrainingDataset::getForController();
+        
+        /* Original hardcoded data diganti dengan unified dataset
         $trainingData = [
             [
                 'Pendapatan' => 'Sangat Rendah',
@@ -367,23 +366,16 @@ class ANNController extends Controller
                 'Tujuan Jangka Panjang' => 'Sangat Tinggi',
                 'Kelas Ekonomi (Arsitekip)' => 'Financial Sage'
             ]
-        ];
+        ]; */
 
         // Pisahkan fitur dan label
         $features = [];
         $labels = [];
         
         foreach ($trainingData as $row) {
-            $features[] = [
-                $row['Pendapatan'],
-                $row['Anggaran'],
-                $row['Tabungan & Dana Darurat'],
-                $row['Utang'],
-                $row['Investasi'],
-                $row['Asuransi'],
-                $row['Tujuan Jangka Panjang']
-            ];
             $labels[] = $row['Kelas Ekonomi (Arsitekip)'];
+            unset($row['Kelas Ekonomi (Arsitekip)']);
+            $features[] = $row;
         }
 
         // Konversi fitur ke nilai numerik
@@ -397,8 +389,7 @@ class ANNController extends Controller
             7, // Jumlah fitur input
             [10, 10], // Hidden layers
             array_keys($this->categoryMapping['Kelas Ekonomi (Arsitekip)']), // Kelas output
-            1000, // Max iterations
-            0.1 // Learning rate
+            1000 // Max iterations
         );
         
         // Latih model

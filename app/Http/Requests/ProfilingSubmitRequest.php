@@ -10,7 +10,19 @@ class ProfilingSubmitRequest extends FormRequest
     {
         return [
             'answers'   => 'required|array|min:3',
-            'answers.*' => 'string',
+
+            'answers.*.question_code' => [
+                'required',
+                'string',
+                'exists:profiling_questions,question_code',
+            ],
+
+            'answers.*.option_token' => [
+                'required',
+                'string',
+                'exists:profiling_question_options,option_token',
+            ],
+
             'profiling_done' => 'boolean|nullable'
         ];
     }
