@@ -63,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Prediction & Analysis Endpoints
         Route::get('/predict/current', [PredictionController::class, 'getCurrentPrediction']);
         Route::get('/analysis/pause', [PredictionController::class, 'analyzePause']);
-        Route::post('/finish', [PredictionController::class, 'finishSession']);
+        // Note: /finish endpoint removed - session ends automatically when turn_number >= max_turns
     });
 
     Route::get('/tile/{id}', [BoardController::class, 'getTile']);

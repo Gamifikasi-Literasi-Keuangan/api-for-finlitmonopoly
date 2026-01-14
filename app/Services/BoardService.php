@@ -12,6 +12,20 @@ use App\Models\QuizCard;
 class BoardService
 {
     /**
+     * Mapping kategori Tile (umum) ke kategori Scenario (spesifik)
+     * Digunakan untuk random selection scenario berdasarkan kategori tile
+     */
+    private const CATEGORY_MAPPING = [
+        'pendapatan' => ['Uang Bulanan', 'Pendapatan', 'Beasiswa'],
+        'anggaran' => ['Makan', 'Transport', 'Nongkrong'],
+        'tabungan_dan_dana_darurat' => ['Tabungan & Dana Darurat'],
+        'utang' => ['Pinjaman Teman', 'Pinjol', 'Utang'],
+        'investasi' => ['Reksadana', 'Saham', 'Cryptoocurrency'],
+        'asuransi' => ['Asuransi Kesehatan', 'Asuransi Kendaraan', 'Asuransi Barang/Harta'],
+        'tujuan_jangka_panjang' => ['Pendidikan', 'Pengalaman', 'Aset Produktif']
+    ];
+
+    /**
      * GET /tile/{tile_id} (index)
      * Mengambil data tile dan memicu event.
      */
@@ -110,17 +124,23 @@ class BoardService
         // 2. Jika dinamis, pilih acak dari tabel terkait
         switch ($tile->type) {
             case 'scenario':
-                // Ambil scenario acak (bisa difilter by category tile jika ada)
+                // Ambil scenario acak dengan mapping kategori
                 $query = Scenario::query();
-                if ($tile->category)
-                    $query->where('category', $tile->category);
+                if ($tile->category && isset(self::CATEGORY_MAPPING[$tile->category])) {
+                    // Gunakan mapping untuk mencari scenario dengan sub-kategori yang sesuai
+                    $query->whereIn('category', self::CATEGORY_MAPPING[$tile->category]);
+                }
                 return $query->inRandomOrder()->value('id') ?? 'sc_default';
 
             case 'risk':
+                // Ambil kartu risk acak (uppercase untuk match database)
+                $card = Card::where('type', 'RISK')->inRandomOrder()->first();
+                return $card ? $card->id : 'card_risk_default';
+
             case 'chance':
-                // Ambil kartu acak sesuai tipe
-                $card = Card::where('type', $tile->type)->inRandomOrder()->first();
-                return $card ? $card->id : 'card_default';
+                // Ambil kartu chance acak (uppercase untuk match database)
+                $card = Card::where('type', 'CHANCE')->inRandomOrder()->first();
+                return $card ? $card->id : 'card_chance_default';
 
             case 'quiz':
                 // Ambil kuis acak
