@@ -22,27 +22,22 @@ class PlayerService
         $platform = $data['platform'] ?? 'web';
         $locale = $data['locale'] ?? 'id_ID';
 
-        $googleId = 'google_id_tester_001'; 
-        $name = 'Tester Postman';
-        $avatar = 'https://ui-avatars.com/api/?name=Tester+Postman';
-        
-        
-        // $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
-        // try {
-        //     $payload = $client->verifyIdToken($idToken);
-        // } catch (\Exception $e) {
-        //     $payload = false;
-        // }
+        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        try {
+            $payload = $client->verifyIdToken($idToken);
+        } catch (\Exception $e) {
+            $payload = false;
+        }
 
-        // if (!$payload) {
-        //      throw new \Exception("Invalid Google Token (Wrong format or expired)");
-        // }
-        // $googleId = $payload['sub'];
-        // $email = $payload['email'];
-        // $name = $payload['name'];
-        // $avatar = $payload['picture'] ?? null;
-        
-        
+        if (!$payload) {
+            throw new \Exception("Invalid Google Token (Wrong format or expired)");
+        }
+        $googleId = $payload['sub'];
+        $email = $payload['email'];
+        $name = $payload['name'];
+        $avatar = $payload['picture'] ?? null;
+
+
         return DB::transaction(function () use ($googleId, $name, $avatar, $platform, $locale) {
             $user = User::firstOrCreate(
                 ['google_id' => $googleId],
@@ -91,7 +86,7 @@ class PlayerService
     {
         $accessToken = $user->createToken('game-client')->plainTextToken;
         $refreshTokenString = Str::random(60);
-        
+
         DB::table('auth_tokens')->insert([
             'token' => $refreshTokenString,
             'type' => 'refresh',
@@ -104,7 +99,7 @@ class PlayerService
             'access_token' => $accessToken,
             'refresh_token' => $refreshTokenString,
             'token_type' => 'Bearer',
-            'expires_in' => 3600, 
+            'expires_in' => 3600,
             'player_id' => $player->PlayerId,
             'username' => $player->name,
             'auth_status' => 'ok',
@@ -132,8 +127,9 @@ class PlayerService
         }
 
         $user = User::find($tokenRecord->userId);
-        if (!$user) throw new \Exception("User not found");
-        
+        if (!$user)
+            throw new \Exception("User not found");
+
         $player = $user->player;
 
         $newAccessToken = $user->createToken('game-client')->plainTextToken;
