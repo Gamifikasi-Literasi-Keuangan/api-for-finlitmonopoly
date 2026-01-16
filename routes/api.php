@@ -26,6 +26,11 @@ use App\Http\Controllers\PredictionController;
 Route::prefix('auth')->group(function () {
     Route::post('/google', [AuthController::class, 'google']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+
+    // Web OAuth Flow
+    Route::get('/google/web/start', [AuthController::class, 'googleWebStart']);
+    Route::get('/google/web/callback', [AuthController::class, 'googleWebCallback']);
+    Route::get('/google/web/result', [AuthController::class, 'googleWebResult']);
 });
 
 Route::prefix('config')->group(function () {
@@ -40,14 +45,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/cluster', [ProfilingController::class, 'cluster']);
         // Route::get('/fuzzy', [ProfilingController::class, 'fuzzy']);
     });
-    
+
     Route::prefix('matchmaking')->group(function () {
         Route::post('/join', [MatchmakingController::class, 'join']);
         Route::post('/character/select', [MatchmakingController::class, 'selectCharacter']);
         Route::get('/status', [MatchmakingController::class, 'status']);
         Route::post('/ready', [MatchmakingController::class, 'ready']);
     });
-    
+
     Route::prefix('session')->group(function () {
         Route::get('/state', [SessionController::class, 'state']);
         Route::post('/ping', [SessionController::class, 'ping']);
@@ -59,7 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::post('/player/move', [SessionController::class, 'move']);
         Route::post('/leave', [SessionController::class, 'leave']);
-        
+
         // Prediction & Analysis Endpoints
         Route::get('/predict/current', [PredictionController::class, 'getCurrentPrediction']);
         Route::get('/analysis/pause', [PredictionController::class, 'analyzePause']);
@@ -67,7 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/tile/{id}', [BoardController::class, 'getTile']);
-    
+
     Route::prefix('scenario')->group(function () {
         Route::get('/{scenario_id}', [ScenarioController::class, 'show']);
         Route::post('/submit', [ScenarioController::class, 'submit']);
@@ -78,13 +83,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/quiz/{quiz_id}', [CardController::class, 'getQuizCard']);
         Route::post('/quiz/submit', [CardController::class, 'submitQuiz']);
     });
-    
+
     Route::prefix('recommendation')->group(function () {
         Route::get('/next', [RecommendationController::class, 'next']);
         Route::get('/path', [RecommendationController::class, 'path']);
         Route::get('/peer', [RecommendationController::class, 'peer']);
     });
-    
+
     Route::post('/feedback/intervention', [FeedbackController::class, 'store']);
     Route::get('/intervention/trigger', [InterventionController::class, 'trigger']);
     Route::get('/performance/scores', [PerformanceController::class, 'scores']);
