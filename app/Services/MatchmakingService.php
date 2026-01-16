@@ -222,8 +222,8 @@ class MatchmakingService
         $total = $participants->count();
         $readyCount = $participants->where('is_ready', true)->count();
 
-        // Jika sudah penuh dan semua ready, start session
-        if ($total >= $session->max_players && $readyCount == $total) {
+        // Jika semua player yang ada sudah ready (minimal 2 player), start session
+        if ($total >= 2 && $readyCount == $total) {
             $session->status = 'active';
             $session->started_at = now();
             
