@@ -10,7 +10,7 @@ class GameSession extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = [];
-    protected $fillable = ['sessionId', 'host_player_id',  'max_players', 'max_turns', 'status', 'current_turn', 'created_at'];
+    protected $fillable = ['sessionId', 'host_player_id', 'current_player_id', 'max_players', 'max_turns', 'status', 'current_turn', 'created_at'];
     public $timestamps = false;
 
     public function currentPlayer() {
