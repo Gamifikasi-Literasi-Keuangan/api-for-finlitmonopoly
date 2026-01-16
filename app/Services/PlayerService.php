@@ -39,32 +39,44 @@ class PlayerService
 
 
         return DB::transaction(function () use ($googleId, $name, $avatar, $platform, $locale) {
-            $user = User::firstOrCreate(
-                ['google_id' => $googleId],
-                [
+            // 1. Cari atau Buat User
+            $user = User::where('google_id', $googleId)->first();
+            $isNewUser = false;
+
+            if (!$user) {
+                // New User
+                $user = User::create([
+                    'google_id' => $googleId,
                     'username' => $name,
                     'role' => 'player',
                     'avatar' => $avatar,
                     'passwordHash' => null
-                ]
-            );
+                ]);
+                $isNewUser = true;
+            } else {
+                // Existing User - Sync Data
+                $user->update([
+                    'username' => $name,
+                    'avatar' => $avatar
+                ]);
+            }
 
-            $isNewUser = $user->wasRecentlyCreated;
+            // 2. Cari atau Buat Player
+            $player = Player::where('user_id', $user->id)->first();
 
-            $player = Player::firstOrCreate(
-                ['user_id' => $user->id],
-                [
+            if (!$player) {
+                $player = Player::create([
                     'PlayerId' => 'player_' . Str::random(8),
+                    'user_id' => $user->id, // Establish Relation
                     'name' => $name,
                     'avatar_url' => $avatar,
                     'initial_platform' => $platform,
                     'locale' => $locale,
                     'gamesPlayed' => 0,
                     'created_at' => now()
-                ]
-            );
+                ]);
 
-            if ($player->wasRecentlyCreated) {
+                // Create Profile for new Player
                 PlayerProfile::create([
                     'PlayerId' => $player->PlayerId,
                     'cluster' => null,
@@ -73,7 +85,16 @@ class PlayerService
                     'thresholds' => json_encode(["critical" => 0.30, "high" => 0.50, "medium" => 0.70]),
                     'last_updated' => now(),
                 ]);
+            } else {
+                // Existing Player - Sync Data
+                $player->update([
+                    'name' => $name,
+                    'avatar_url' => $avatar,
+                    'locale' => $locale
+                    // 'initial_platform' tidak diupdate karena historis
+                ]);
             }
+
             return $this->generateTokens($user, $player, $isNewUser);
         });
     }
