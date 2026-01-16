@@ -90,12 +90,16 @@ class SessionService
         if ($session->current_player_id) {
             $currentPlayer = $session->participants->firstWhere('playerId', $session->current_player_id);
             $currentPlayerName = $currentPlayer ? $currentPlayer->player->name : 'Unknown';
+        } elseif ($session->status === 'waiting' && $session->host_player_id) {
+            // Jika masih waiting dan current_player_id null, gunakan host
+            $hostPlayer = $session->participants->firstWhere('playerId', $session->host_player_id);
+            $currentPlayerName = $hostPlayer ? $hostPlayer->player->name : 'Waiting';
         }
 
         return [
             "session_id" => $session->sessionId,
             "status" => $session->status,
-            "current_turn_player_id" => $session->current_player_id,
+            "current_turn_player_id" => $session->current_player_id ?? $session->host_player_id,
             "current_turn_player_name" => $currentPlayerName,
             "turn_phase" => $turnPhase,
             "turn_number" => $session->current_turn,

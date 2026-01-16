@@ -54,6 +54,7 @@ class MatchmakingService
                     'max_turns' => $configMaxTurns,
                     'status' => 'waiting',
                     'current_turn' => 0,
+                    'current_player_id' => $playerId,
                     'created_at' => now(),
                 ]);
 
@@ -225,13 +226,21 @@ class MatchmakingService
         if ($total >= $session->max_players && $readyCount == $total) {
             $session->status = 'active';
             $session->started_at = now();
-            // Set giliran pertama (misal ke host atau random)
-            $session->current_player_id = $session->host_player_id;
+            
+            // Set giliran pertama ke player dengan order 1 (player pertama yang join)
+            $firstPlayer = $participants->sortBy('player_order')->first();
+            $session->current_player_id = $firstPlayer ? $firstPlayer->playerId : $session->host_player_id;
+            
             // set current_turn = 1
             $session->current_turn = 1;
 
-            // Simpan JSON state awal jika perlu
-            // $session->game_state = json_encode(['turn_phase' => 'start', ...]);
+            // Inisialisasi game_state dengan turn_phase
+            $gameState = [
+                'turn_phase' => 'waiting',
+                'last_dice' => 0,
+                'prev_position' => 0
+            ];
+            $session->game_state = json_encode($gameState);
 
             $session->save();
         }
