@@ -110,17 +110,22 @@ class BoardService
         // 2. Jika dinamis, pilih acak dari tabel terkait
         switch ($tile->type) {
             case 'scenario':
-                // Ambil scenario acak (bisa difilter by category tile jika ada)
+                // Ambil scenario acak berdasarkan nama tile (exact match dengan kategori scenario)
                 $query = Scenario::query();
-                if ($tile->category)
-                    $query->where('category', $tile->category);
+                if ($tile->name) {
+                    $query->where('category', $tile->name);
+                }
                 return $query->inRandomOrder()->value('id') ?? 'sc_default';
 
             case 'risk':
+                // Ambil kartu risk acak (uppercase untuk match database)
+                $card = Card::where('type', 'RISK')->inRandomOrder()->first();
+                return $card ? $card->id : 'card_risk_default';
+
             case 'chance':
-                // Ambil kartu acak sesuai tipe
-                $card = Card::where('type', $tile->type)->inRandomOrder()->first();
-                return $card ? $card->id : 'card_default';
+                // Ambil kartu chance acak (uppercase untuk match database)
+                $card = Card::where('type', 'CHANCE')->inRandomOrder()->first();
+                return $card ? $card->id : 'card_chance_default';
 
             case 'quiz':
                 // Ambil kuis acak

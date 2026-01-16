@@ -23,7 +23,7 @@ class SessionService
     {
         $participation = ParticipatesIn::where('playerId', $playerId)
             ->whereHas('session', function ($query) {
-                $query->whereIn('status', ['active', 'waiting']);
+                $query->whereIn('status', ['active', 'waiting', 'ended']);
             })
             ->with('session.participants')
             ->first();
@@ -315,6 +315,7 @@ class SessionService
      * Mengakhiri giliran pemain dalam sesi aktif:
      * memverifikasi giliran dan fase, menentukan pemain berikutnya,
      * memperbarui giliran dan fase, lalu mengembalikan detail giliran berikutnya.
+     * Jika turn_number mencapai max_turns, sesi otomatis berakhir (status = 'ended').
      */
     public function endTurn(string $playerId)
     {
@@ -354,13 +355,27 @@ class SessionService
         $gameState['last_dice'] = 0;
 
         $session->game_state = json_encode($gameState);
+        
+        // Check if game should end (turn_number >= max_turns)
+        if ($session->current_turn >= $session->max_turns) {
+            $session->status = 'ended';
+        }
+        
         $session->save();
 
-        return [
+        $response = [
             'turn_phase' => 'completed',
             'next_turn_player_id' => $nextPlayer->playerId,
             'turn_number' => $session->current_turn
         ];
+
+        // Add session_ended flag if game ended
+        if ($session->status === 'ended') {
+            $response['session_ended'] = true;
+            $response['message'] = 'Game session has ended. Maximum turns reached.';
+        }
+
+        return $response;
     }
 
     /**

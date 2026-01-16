@@ -10,6 +10,20 @@ class RecommendationService
 {
     protected $cosine;
 
+    /**
+     * Mapping kategori umum (dari lifetime_scores) ke sub-kategori spesifik (dari scenarios)
+     * Sama seperti di BoardService untuk konsistensi
+     */
+    private const CATEGORY_MAPPING = [
+        'pendapatan' => ['Uang Bulanan', 'Pendapatan', 'Beasiswa'],
+        'anggaran' => ['Makan', 'Transport', 'Nongkrong'],
+        'tabungan_dan_dana_darurat' => ['Tabungan & Dana Darurat'],
+        'utang' => ['Pinjaman Teman', 'Pinjol', 'Utang'],
+        'investasi' => ['Reksadana', 'Saham', 'Cryptoocurrency'],
+        'asuransi_dan_proteksi' => ['Asuransi Kesehatan', 'Asuransi Kendaraan', 'Asuransi Barang/Harta'],
+        'tujuan_jangka_panjang' => ['Pendidikan', 'Pengalaman', 'Aset Produktif']
+    ];
+
     public function __construct(CosineSimilarityService $cosine)
     {
         $this->cosine = $cosine;
@@ -41,9 +55,17 @@ class RecommendationService
         // Konversi user score (0-100) ke difficulty level (1-3)
         $userLevel = $this->convertScoreToLevel($userWeakestScore);
 
-        $questions = DB::table('scenarios')
-            ->where('category', $weakestCategory)
-            ->get();
+        // Gunakan mapping untuk query scenario dengan sub-kategori yang sesuai
+        $query = DB::table('scenarios');
+        
+        if (isset(self::CATEGORY_MAPPING[$weakestCategory])) {
+            $query->whereIn('category', self::CATEGORY_MAPPING[$weakestCategory]);
+        } else {
+            // Fallback jika kategori tidak ada di mapping
+            $query->where('category', $weakestCategory);
+        }
+        
+        $questions = $query->get();
 
         if ($questions->isEmpty()) {
             return ['error' => 'No questions found for category: ' . $weakestCategory];
