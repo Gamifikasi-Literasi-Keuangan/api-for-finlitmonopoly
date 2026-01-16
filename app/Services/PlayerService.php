@@ -22,54 +22,61 @@ class PlayerService
         $platform = $data['platform'] ?? 'web';
         $locale = $data['locale'] ?? 'id_ID';
 
-        $googleId = 'google_id_tester_001'; 
-        $name = 'Tester Postman';
-        $avatar = 'https://ui-avatars.com/api/?name=Tester+Postman';
-        
-        
-        // $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
-        // try {
-        //     $payload = $client->verifyIdToken($idToken);
-        // } catch (\Exception $e) {
-        //     $payload = false;
-        // }
+        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        try {
+            $payload = $client->verifyIdToken($idToken);
+        } catch (\Exception $e) {
+            $payload = false;
+        }
 
-        // if (!$payload) {
-        //      throw new \Exception("Invalid Google Token (Wrong format or expired)");
-        // }
-        // $googleId = $payload['sub'];
-        // $email = $payload['email'];
-        // $name = $payload['name'];
-        // $avatar = $payload['picture'] ?? null;
-        
-        
+        if (!$payload) {
+            throw new \Exception("Invalid Google Token (Wrong format or expired)");
+        }
+        $googleId = $payload['sub'];
+        $email = $payload['email'];
+        $name = $payload['name'];
+        $avatar = $payload['picture'] ?? null;
+
+
         return DB::transaction(function () use ($googleId, $name, $avatar, $platform, $locale) {
-            $user = User::firstOrCreate(
-                ['google_id' => $googleId],
-                [
+            // 1. Cari atau Buat User
+            $user = User::where('google_id', $googleId)->first();
+            $isNewUser = false;
+
+            if (!$user) {
+                // New User
+                $user = User::create([
+                    'google_id' => $googleId,
                     'username' => $name,
                     'role' => 'player',
                     'avatar' => $avatar,
                     'passwordHash' => null
-                ]
-            );
+                ]);
+                $isNewUser = true;
+            } else {
+                // Existing User - Sync Data
+                $user->update([
+                    'username' => $name,
+                    'avatar' => $avatar
+                ]);
+            }
 
-            $isNewUser = $user->wasRecentlyCreated;
+            // 2. Cari atau Buat Player
+            $player = Player::where('user_id', $user->id)->first();
 
-            $player = Player::firstOrCreate(
-                ['user_id' => $user->id],
-                [
+            if (!$player) {
+                $player = Player::create([
                     'PlayerId' => 'player_' . Str::random(8),
+                    'user_id' => $user->id, // Establish Relation
                     'name' => $name,
                     'avatar_url' => $avatar,
                     'initial_platform' => $platform,
                     'locale' => $locale,
                     'gamesPlayed' => 0,
                     'created_at' => now()
-                ]
-            );
+                ]);
 
-            if ($player->wasRecentlyCreated) {
+                // Create Profile for new Player
                 PlayerProfile::create([
                     'PlayerId' => $player->PlayerId,
                     'cluster' => null,
@@ -78,7 +85,16 @@ class PlayerService
                     'thresholds' => json_encode(["critical" => 0.30, "high" => 0.50, "medium" => 0.70]),
                     'last_updated' => now(),
                 ]);
+            } else {
+                // Existing Player - Sync Data
+                $player->update([
+                    'name' => $name,
+                    'avatar_url' => $avatar,
+                    'locale' => $locale
+                    // 'initial_platform' tidak diupdate karena historis
+                ]);
             }
+
             return $this->generateTokens($user, $player, $isNewUser);
         });
     }
@@ -91,7 +107,7 @@ class PlayerService
     {
         $accessToken = $user->createToken('game-client')->plainTextToken;
         $refreshTokenString = Str::random(60);
-        
+
         DB::table('auth_tokens')->insert([
             'token' => $refreshTokenString,
             'type' => 'refresh',
@@ -104,7 +120,7 @@ class PlayerService
             'access_token' => $accessToken,
             'refresh_token' => $refreshTokenString,
             'token_type' => 'Bearer',
-            'expires_in' => 3600, 
+            'expires_in' => 3600,
             'player_id' => $player->PlayerId,
             'username' => $player->name,
             'auth_status' => 'ok',
@@ -132,8 +148,9 @@ class PlayerService
         }
 
         $user = User::find($tokenRecord->userId);
-        if (!$user) throw new \Exception("User not found");
-        
+        if (!$user)
+            throw new \Exception("User not found");
+
         $player = $user->player;
 
         $newAccessToken = $user->createToken('game-client')->plainTextToken;
