@@ -38,6 +38,28 @@ class PlayerService
         $avatar = $payload['picture'] ?? null;
 
 
+        return $this->processLogin($googleId, $name, $avatar, $platform, $locale);
+    }
+
+    /**
+     * Menangani callback dari Socialite (Web Flow)
+     */
+    public function handleSocialiteCallback($socialiteUser, $platform = 'web', $locale = 'id_ID')
+    {
+        $googleId = $socialiteUser->getId();
+        $name = $socialiteUser->getName();
+        $avatar = $socialiteUser->getAvatar();
+
+        // $email = $socialiteUser->getEmail(); // Jika butuh email
+
+        return $this->processLogin($googleId, $name, $avatar, $platform, $locale);
+    }
+
+    /**
+     * Logika Inti Login/Register (Reusable)
+     */
+    private function processLogin($googleId, $name, $avatar, $platform, $locale)
+    {
         return DB::transaction(function () use ($googleId, $name, $avatar, $platform, $locale) {
             // 1. Cari atau Buat User
             $user = User::where('google_id', $googleId)->first();
