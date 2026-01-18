@@ -26,6 +26,7 @@ class PlayerDecision extends Model
         'decision_time_seconds',
         'intervention_triggered',
         'intervention_level',
+        'intervention_type',
         'created_at'
     ];
 

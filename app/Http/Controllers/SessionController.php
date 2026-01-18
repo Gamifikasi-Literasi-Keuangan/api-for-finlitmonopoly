@@ -9,14 +9,15 @@ class SessionController extends Controller
 {
     protected $sessionService;
     public function __construct(SessionService $sessionService)
-        {
-            $this->sessionService = $sessionService;
-        }
+    {
+        $this->sessionService = $sessionService;
+    }
 
     /**
      * Retrieve the current state of the game session for the authenticated player.
      */
-    public function state(Request $request){
+    public function state(Request $request)
+    {
         $user = $request->user();
         if (!$user || !$user->player) {
             return response()->json(['error' => 'Player profile not found'], 404);
@@ -42,11 +43,12 @@ class SessionController extends Controller
     /**
      * Handle ping requests to check server status.
      */
-    public function ping(Request $request){
+    public function ping(Request $request)
+    {
         return response()->json([
-                'status' => 'ok',
-                'server_time' => now()->toIso8601String()
-            ]);
+            'status' => 'ok',
+            'server_time' => now()->toIso8601String()
+        ]);
     }
 
     /**
@@ -184,6 +186,34 @@ class SessionController extends Controller
             }
 
             return response()->json($result, 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Handle toggling player break status
+     */
+    public function break(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->player) {
+            return response()->json(['error' => 'Player profile not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'on_break' => 'required|boolean'
+        ]);
+
+        try {
+            $result = $this->sessionService->toggleBreak($user->player->PlayerId, $validated['on_break']);
+
+            if (isset($result['error'])) {
+                return response()->json($result, 400);
+            }
+
+            return response()->json(['ok' => true], 200);
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

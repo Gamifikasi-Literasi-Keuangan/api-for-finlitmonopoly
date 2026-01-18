@@ -158,7 +158,7 @@ class RecommendationService
             'reason' => "Fokus pada area: $categoryName (Skor {$userCurrentScore}/100)",
             'expected_benefit' => "+{$bestQuestion->expected_benefit} points jika diselesaikan dengan benar",
             'peer_insight' => $this->generatePeerInsight($bestCategoryKey),
-            'debug_raw_difficulty' => $bestQuestion->difficulty
+            // 'debug_raw_difficulty' => $bestQuestion->difficulty
         ];
     }
 

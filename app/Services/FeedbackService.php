@@ -31,12 +31,19 @@ class FeedbackService
 
         // Catat sebagai keputusan (decision) tipe 'intervention_log'
         // Jika user mengirim teks jawaban, simpan di player_response
+        // Auto-detect intervention type if not provided
+        $interventionType = $data['intervention_type'] ?? null;
+        if (!$interventionType && str_starts_with($data['intervention_id'], 'intv_l4_')) {
+            $interventionType = 'break';
+        }
+
         PlayerDecision::create([
             'player_id' => $playerId,
             'session_id' => $sessionId,
             'turn_number' => $turnNumber,
             'content_id' => $data['scenario_id'],
             'intervention_id' => $data['intervention_id'],
+            'intervention_type' => $interventionType,
             'content_type' => 'intervention_log',
             'player_response' => $data['player_response'], // Berisi ID tombol atau Teks Jawaban
             'is_correct' => false,
@@ -46,17 +53,27 @@ class FeedbackService
 
         $heedMessage = null;
 
-        // Logic: Jika respon BUKAN 'ignored', berarti user engage (heeded) atau menjawab pertanyaan
+        // Cek Apakah Heeded
         if ($data['player_response'] !== 'ignored') {
-            $category = $this->repo->getCategoryFromContentId($data['scenario_id']);
 
-            // Cek template Level 3
-            $template = InterventionTemplate::where('level', 3)
-                ->where('category', $category)
-                ->first();
+            // Checks for specific types
+            if ($interventionType === 'break') {
+                $heedMessage = "Selamat beristirahat! Kami akan tunggu.";
+                if ($participation) {
+                    $participation->update(['on_break' => true]);
+                }
+            } else {
+                $category = $this->repo->getCategoryFromContentId($data['scenario_id']);
 
-            if ($template && $template->heed_message) {
-                $heedMessage = $template->heed_message;
+                if ($category) {
+                    $template = InterventionTemplate::where('level', [2, 3])
+                        ->where('category', $category)
+                        ->first();
+
+                    if ($template && $template->heed_message) {
+                        $heedMessage = $template->heed_message;
+                    }
+                }
             }
         }
 

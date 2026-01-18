@@ -25,7 +25,7 @@ class InterventionTemplateSeeder extends Seeder
             'message_template' => 'Ingat: Dana darurat itu prioritas #1 sebelum investasi ya!',
             'heed_message' => 'Sip! Lanjut main dengan bijak ya.',
             'actions_template' => [
-                ['id' => 'ok', 'text' => 'Oke, Mengerti']
+                ['id' => 'ignored', 'text' => 'Oke, Mengerti']
             ],
             'is_mandatory' => false
         ]);

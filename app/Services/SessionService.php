@@ -56,7 +56,8 @@ class SessionService
                 'username' => $p->player->name ?? 'Unknown',
                 'character_id' => $p->player->character_id ?? 1,
                 'connected' => $p->connection_status === 'connected',
-                'is_ready' => (bool) $p->is_ready
+                'is_ready' => (bool) $p->is_ready,
+                'on_break' => (bool) $p->on_break
             ];
 
             $latestProfile = PlayerProfile::find($p->playerId);
@@ -348,7 +349,34 @@ class SessionService
             return ['error' => 'Player participation data error'];
         }
 
-        $nextIndex = ($currentIndex + 1) % $participants->count();
+        // Cari pemain berikutnya yang TIDAK sedang break
+        $totalPlayers = $participants->count();
+        $nextIndex = ($currentIndex + 1) % $totalPlayers;
+        $checkedCount = 0;
+        $foundNext = false;
+
+        do {
+            $candidate = $participants[$nextIndex];
+
+            // Jika ketemu user yang tidak break, dia next player
+            if (!$candidate->on_break) {
+                $foundNext = true;
+                break;
+            }
+
+            // Lanjut cari ke user berikutnya
+            $nextIndex = ($nextIndex + 1) % $totalPlayers;
+            $checkedCount++;
+
+        } while ($checkedCount < $totalPlayers);
+
+        // Jika semua pemain break (checkedCount >= totalPlayers), game pause?
+        // Atau tetap lempar ke nextIndex awal (meski break) agar tidak infinite loop/error
+        // Keputusan: Jika semua break, giliran tetap berputar ke orang berikutnya (maksa).
+        if (!$foundNext) {
+            $nextIndex = ($currentIndex + 1) % $totalPlayers;
+        }
+
         $nextPlayer = $participants[$nextIndex];
 
         $session->current_player_id = $nextPlayer->playerId;
@@ -359,12 +387,12 @@ class SessionService
         $gameState['last_dice'] = 0;
 
         $session->game_state = json_encode($gameState);
-        
+
         // Check if game should end (turn_number >= max_turns)
         if ($session->current_turn >= $session->max_turns) {
             $session->status = 'ended';
         }
-        
+
         $session->save();
 
         $response = [
@@ -419,5 +447,31 @@ class SessionService
                 'session_id' => $sessionId
             ];
         });
+    }
+    /**
+     * Set status break pemain
+     */
+    public function toggleBreak(string $playerId, bool $status)
+    {
+        $participation = ParticipatesIn::where('playerId', $playerId)
+            ->whereHas('session', fn($q) => $q->whereIn('status', ['active', 'waiting']))
+            ->first();
+
+        if (!$participation) {
+            return ['error' => 'Player is not in an active session'];
+        }
+
+        // Jika status berubah menjadi false (selesai break), catat waktu selesai break
+        if ($participation->on_break && !$status) {
+            $participation->last_break_end_at = now();
+        }
+
+        $participation->on_break = $status;
+        $participation->save();
+
+        // Opsional: Jika pemain sedang break saat gilirannya, mungkin perlu auto-skip?
+        // Untuk saat ini kita biarkan logic di endTurn yang menangani skip.
+
+        return ['status' => 'success', 'on_break' => $status];
     }
 }
