@@ -42,4 +42,29 @@ class BoardController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * GET /special/{special_id}
+     * Handle special tile events (start, terjerat_utang, dana_darurat_aman, bangkrut)
+     */
+    public function getSpecialTile(Request $request, string $specialId)
+    {
+        $user = $request->user();
+        if (!$user || !$user->player) {
+            return response()->json(['error' => 'Player profile not found'], 404);
+        }
+
+        try {
+            $result = $this->boardService->handleSpecialTile($user->player->PlayerId, $specialId);
+
+            if (isset($result['error'])) {
+                return response()->json($result, 400);
+            }
+
+            return response()->json($result, 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

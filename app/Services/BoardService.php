@@ -87,7 +87,7 @@ class BoardService
             return [
                 'title' => $tile->name,
                 'category' => $tile->category ?? 'General',
-                'type' => $tile->type, // scenario | risk | chance | quiz
+                'type' => $tile->type, // scenario | risk | chance | quiz | special
                 'result_id' => $resultId,
                 'turn_phase' => 'resolving_event'
             ];
@@ -102,6 +102,12 @@ class BoardService
         // 1. Cek apakah ada konten statis (linked_content) di tile
         if (!empty($tile->linked_content)) {
             $linked = json_decode($tile->linked_content, true);
+            
+            // Untuk special tiles, return special_id
+            if ($tile->type === 'special' && isset($linked['special_id'])) {
+                return $linked['special_id'];
+            }
+            
             if (!empty($linked['id'])) {
                 return $linked['id'];
             }
@@ -136,5 +142,102 @@ class BoardService
                 // Untuk kotak Start, Parkir Bebas, dll.
                 return $tile->tile_id;
         }
+    }
+
+    /**
+     * Handle special tile events (Start, Terjerat Utang, Dana Darurat Aman, Bangkrut)
+     */
+    public function handleSpecialTile(string $playerId, string $specialId)
+    {
+        return DB::transaction(function () use ($playerId, $specialId) {
+            $participation = ParticipatesIn::where('playerId', $playerId)
+                ->whereHas('session', fn($q) => $q->where('status', 'active'))
+                ->with(['session', 'player.profile'])
+                ->lockForUpdate()
+                ->first();
+
+            if (!$participation) {
+                return ['error' => 'Player is not in an active session'];
+            }
+
+            $profile = $participation->player->profile;
+            if (!$profile) {
+                return ['error' => 'Player profile not found'];
+            }
+
+            $lifetimeScores = is_string($profile->lifetime_scores) 
+                ? json_decode($profile->lifetime_scores, true) 
+                : ($profile->lifetime_scores ?? []);
+
+            $affectedScores = [];
+            $newScoreValues = [];
+            $message = '';
+
+            switch ($specialId) {
+                case 'start':
+                    // Kotak Start - tidak mengubah score, hanya informasi
+                    $message = 'Kembali ke titik awal! Terus semangat mengelola keuangan!';
+                    break;
+
+                case 'terjerat_utang':
+                    // Terjerat Utang - meningkatkan score utang (semakin tinggi = semakin buruk)
+                    $currentDebt = $lifetimeScores['utang'] ?? 0;
+                    $newDebt = max(0, min(100, $currentDebt + 15)); // +15 poin utang
+                    
+                    $affectedScores = ['utang'];
+                    $newScoreValues = [$newDebt];
+                    $lifetimeScores['utang'] = $newDebt;
+                    
+                    $message = 'Kamu terjerat utang! Hati-hati dalam mengelola pinjaman. Score utang meningkat.';
+                    break;
+
+                case 'dana_darurat_aman':
+                    // Dana Darurat Aman - meningkatkan score tabungan & dana darurat
+                    $currentSavings = $lifetimeScores['tabungan_dan_dana_darurat'] ?? 0;
+                    $newSavings = max(0, min(100, $currentSavings + 20)); // +20 poin
+                    
+                    $affectedScores = ['tabungan_dan_dana_darurat'];
+                    $newScoreValues = [$newSavings];
+                    $lifetimeScores['tabungan_dan_dana_darurat'] = $newSavings;
+                    
+                    $message = 'Dana daruratmu aman! Keuanganmu terlindungi dengan baik. Score tabungan & dana darurat meningkat.';
+                    break;
+
+                case 'bangkrut':
+                    // Bangkrut - mengurangi beberapa score sekaligus
+                    $currentSavings = $lifetimeScores['tabungan_dan_dana_darurat'] ?? 0;
+                    $currentInvestment = $lifetimeScores['investasi'] ?? 0;
+                    $currentDebt = $lifetimeScores['utang'] ?? 0;
+                    
+                    $newSavings = max(0, $currentSavings - 30);
+                    $newInvestment = max(0, $currentInvestment - 20);
+                    $newDebt = max(0, min(100, $currentDebt + 25));
+                    
+                    $affectedScores = ['tabungan_dan_dana_darurat', 'investasi', 'utang'];
+                    $newScoreValues = [$newSavings, $newInvestment, $newDebt];
+                    
+                    $lifetimeScores['tabungan_dan_dana_darurat'] = $newSavings;
+                    $lifetimeScores['investasi'] = $newInvestment;
+                    $lifetimeScores['utang'] = $newDebt;
+                    
+                    $message = 'Kamu bangkrut! Tabungan dan investasi berkurang drastis, sementara utang meningkat. Bangkit lagi!';
+                    break;
+
+                default:
+                    return ['error' => 'Invalid special tile ID'];
+            }
+
+            // Update player profile jika ada perubahan score
+            if (!empty($affectedScores)) {
+                $profile->lifetime_scores = $lifetimeScores;
+                $profile->save();
+            }
+
+            return [
+                'affected_scores' => $affectedScores,
+                'new_score_values' => $newScoreValues,
+                'message' => $message
+            ];
+        });
     }
 }

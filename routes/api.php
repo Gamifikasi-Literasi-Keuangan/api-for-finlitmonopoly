@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/tile/{id}', [BoardController::class, 'getTile']);
+    Route::get('/special/{special_id}', [BoardController::class, 'getSpecialTile']);
 
     Route::prefix('scenario')->group(function () {
         Route::get('/{scenario_id}', [ScenarioController::class, 'show']);

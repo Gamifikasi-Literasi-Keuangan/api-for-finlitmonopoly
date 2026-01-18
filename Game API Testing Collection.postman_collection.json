@@ -876,6 +876,34 @@
 						"description": "Mengambil data Chance Card dan langsung apply perubahan skor (tidak perlu submit)"
 					},
 					"response": []
+				},
+				{
+					"name": "Get Special Tile (Corner)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/special/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"special",
+								"start"
+							]
+						},
+						"description": "Handle special corner tiles. Valid special_id: 'start', 'terjerat_utang', 'dana_darurat_aman', 'bangkrut'. Langsung apply perubahan score."
+					},
+					"response": []
 				}
 			]
 		},

@@ -24,6 +24,12 @@ class MatchmakingService
                 ->first();
 
             if ($activeSession) {
+                // Reconnect: Update connection_status back to 'connected'
+                if ($activeSession->connection_status === 'disconnected') {
+                    $activeSession->connection_status = 'connected';
+                    $activeSession->save();
+                }
+                
                 return [
                     'ok' => true,
                     'queue_position' => $activeSession->player_order ?? 1
