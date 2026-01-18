@@ -67,8 +67,8 @@ class InterventionTemplateSeeder extends Seeder
                 'l3_msg' => 'Keputusan investasimu terlalu impulsif dan berisiko tinggi.',
                 'l3_heed' => 'High risk, high return, tapi juga high potential loss. Pelajari fundamental aset sebelum membeli.'
             ],
-            'asuransi_dan_proteksi' => [
-                'name' => 'Asuransi & Proteksi',
+            'asuransi' => [
+                'name' => 'Asuransi',
                 'l2_msg' => 'Kamu belum terlindungi dengan baik. Risiko kesehatan atau aset bisa menguras hartamu.',
                 'l2_heed' => 'Asuransi adalah pengaman kekayaan, bukan investasi. Fokus pada proteksi risiko terbesar.',
                 'l3_msg' => 'Mengabaikan asuransi berarti kamu "self-insure" dengan seluruh tabunganmu.',

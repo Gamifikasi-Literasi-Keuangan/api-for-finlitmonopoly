@@ -7,19 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class BoardTile extends Model
 {
     protected $table = 'boardtiles';
-    protected $primaryKey = 'tileId';
+    protected $primaryKey = 'tile_id';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
     protected $fillable = [
-        'tileId',
-        'sessionId',
-        'position',
+        'tile_id',
+        'position_index',
         'type',
-        'ownerPlayerId',
-        'created_at',
-        'updated_at'
+        'name',
+        'category',
+        'linked_content'
     ];
-
-    const CREATED_AT = 'createdAt';
-    const UPDATED_AT = null;
 }

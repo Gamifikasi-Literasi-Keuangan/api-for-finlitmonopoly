@@ -25,8 +25,7 @@ class InterventionController extends Controller
         }
 
         try {
-            $scenarioId = $request->query('scenario_id');
-            $result = $this->interventionService->checkInterventionTrigger($user->player->PlayerId, $scenarioId);
+            $result = $this->interventionService->checkInterventionTrigger($user->player->PlayerId);
 
             // Jika result NULL, artinya tidak ada intervensi (Aman)
             // Kita bisa return 204 No Content atau JSON kosong agar frontend tahu tidak ada popup

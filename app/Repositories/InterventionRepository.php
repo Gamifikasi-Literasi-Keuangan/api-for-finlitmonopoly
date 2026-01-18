@@ -41,12 +41,7 @@ class InterventionRepository
         $categoryBroken = [];  // 'category_name' => boolean
 
         foreach ($decisions as $decision) {
-            // Kita hanya peduli pada scenario
-            // Jika ada tipe lain, kita bisa pilih untuk ignore atau break global chain
             if ($decision->content_type !== 'scenario') {
-                // Opsional: break global chain jika bukan scenario?
-                // Untuk aman, kita biarkan saja (skip) atau anggap pemutus
-                // $globalChainBroken = true; 
                 continue;
             }
 
@@ -73,7 +68,6 @@ class InterventionRepository
                     if (!$decision->is_correct) {
                         $categoryStreaks[$category]++;
                     } else {
-                        // Ketemu benar, streak putus
                         $categoryBroken[$category] = true;
                     }
                 }
@@ -87,42 +81,70 @@ class InterventionRepository
     }
 
     /**
-     * Mendapatkan kategori dari keputusan (via content_id parsing atau DB)
+     * Mendapatkan kategori dari keputusan (via DB)
      */
     public function getCategoryFromDecision($decision): ?string
     {
         if ($decision->content_id) {
-            $category = $this->getCategoryFromContentId($decision->content_id);
-            if ($category)
-                return $category;
+            return $this->getCategoryFromContentId($decision->content_id);
         }
 
         return null;
     }
 
     /**
-     * Parse kategori dari Content ID string (e.g. SCN_TABUNGAN_04)
+     * Parse kategori dari Content ID menggunakan ID (SCN_KATEGORI_NOMOR)
      */
     public function getCategoryFromContentId(string $contentId): ?string
     {
+        // Parsing Manual (SCN_KATEGORI_NOMOR)
         $parts = explode('_', $contentId);
 
-        // Format SCN_KATEGORI_NOMOR
         if (count($parts) >= 2) {
-            $categoryCode = strtoupper($parts[1]);
-
-            // Mapping Code to Normalized Category Key
+            // Mapping kategori ID dengan boardtile
             $mapping = [
                 'PENDAPATAN' => 'pendapatan',
                 'ANGGARAN' => 'anggaran',
                 'TABUNGAN' => 'tabungan_dan_dana_darurat',
                 'UTANG' => 'utang',
                 'INVESTASI' => 'investasi',
-                'ASURANSI' => 'asuransi_dan_proteksi',
-                'TUJUAN' => 'tujuan_jangka_panjang'
+                'ASURANSI' => 'asuransi',
+                'TUJUAN' => 'tujuan_jangka_panjang',
+
+                // Legacy mappings
+                'SAVING' => 'tabungan_dan_dana_darurat',
+                'DEBT' => 'utang',
+                'INSURANCE' => 'asuransi',
+                'GOAL' => 'tujuan_jangka_panjang'
             ];
 
-            return $mapping[$categoryCode] ?? strtolower($categoryCode);
+            // Ambil bagian tengah sebagai kategori (index 1)
+            $categoryCode = strtoupper($parts[1]);
+
+            if (isset($mapping[$categoryCode])) {
+                return $mapping[$categoryCode];
+            }
+
+            // Fallback: Loop untuk partial match keys
+            foreach ($mapping as $key => $val) {
+                if (str_contains(strtoupper($contentId), $key)) {
+                    return $val;
+                }
+            }
+        }
+
+        // Cek Tabel Scenarios (Fallback jika parsing gagal)
+        $scenario = Scenario::where('id', $contentId)->first();
+        if ($scenario && $scenario->category) {
+            // Normalisasi sederhana jika perlu
+            $cat = strtolower($scenario->category);
+            // Example mapping manual fix if needed based on DB content
+            if (str_contains($cat, 'tabungan'))
+                return 'tabungan_dan_dana_darurat';
+            if (str_contains($cat, 'utang'))
+                return 'utang';
+
+            return $cat;
         }
 
         return null;
