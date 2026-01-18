@@ -377,8 +377,8 @@ class SessionService
         do {
             $candidate = $participants[$nextIndex];
 
-            // Jika ketemu user yang tidak break, dia next player
-            if (!$candidate->on_break) {
+            // Jika ketemu user yang tidak break DAN masih connected, dia next player
+            if (!$candidate->on_break && $candidate->connection_status === 'connected') {
                 $foundNext = true;
                 break;
             }
@@ -389,9 +389,9 @@ class SessionService
 
         } while ($checkedCount < $totalPlayers);
 
-        // Jika semua pemain break (checkedCount >= totalPlayers), game pause?
-        // Atau tetap lempar ke nextIndex awal (meski break) agar tidak infinite loop/error
-        // Keputusan: Jika semua break, giliran tetap berputar ke orang berikutnya (maksa).
+        // Jika semua pemain break atau disconnected (checkedCount >= totalPlayers), game pause?
+        // Atau tetap lempar ke nextIndex awal (meski break/disconnected) agar tidak infinite loop/error
+        // Keputusan: Jika tidak ada pemain aktif, giliran tetap berputar ke orang berikutnya (fallback).
         if (!$foundNext) {
             $nextIndex = ($currentIndex + 1) % $totalPlayers;
         }
@@ -438,6 +438,7 @@ class SessionService
         return DB::transaction(function () use ($playerId) {
             $participation = ParticipatesIn::where('playerId', $playerId)
                 ->whereHas('session', fn($q) => $q->whereIn('status', ['active', 'waiting']))
+                ->with(['session.participants'])
                 ->first();
 
             if (!$participation) {
@@ -451,6 +452,48 @@ class SessionService
             $participation->connection_status = 'disconnected';
             $participation->save();
 
+            // If the leaving player is the current player, pass turn to next connected player
+            if ($session->status === 'active' && $session->current_player_id === $playerId) {
+                $participants = $session->participants->sortBy('player_order')->values();
+                
+                $currentIndex = $participants->search(function ($p) use ($playerId) {
+                    return $p->playerId === $playerId;
+                });
+
+                if ($currentIndex !== false) {
+                    $totalPlayers = $participants->count();
+                    $nextIndex = ($currentIndex + 1) % $totalPlayers;
+                    $checkedCount = 0;
+                    $foundNext = false;
+
+                    // Find next connected and active player
+                    do {
+                        $candidate = $participants[$nextIndex];
+
+                        if (!$candidate->on_break && $candidate->connection_status === 'connected') {
+                            $foundNext = true;
+                            break;
+                        }
+
+                        $nextIndex = ($nextIndex + 1) % $totalPlayers;
+                        $checkedCount++;
+
+                    } while ($checkedCount < $totalPlayers);
+
+                    // If found a valid next player, assign turn
+                    if ($foundNext) {
+                        $nextPlayer = $participants[$nextIndex];
+                        $session->current_player_id = $nextPlayer->playerId;
+                        
+                        // Reset turn phase to waiting for the new player
+                        $gameState = json_decode($session->game_state, true) ?? [];
+                        $gameState['turn_phase'] = 'waiting';
+                        $gameState['last_dice'] = 0;
+                        $session->game_state = json_encode($gameState);
+                    }
+                }
+            }
+
             // Check if all players left
             $remainingPlayers = ParticipatesIn::where('sessionId', $sessionId)
                 ->where('connection_status', 'connected')
@@ -458,8 +501,9 @@ class SessionService
 
             if ($remainingPlayers === 0) {
                 $session->status = 'completed';
-                $session->save();
             }
+            
+            $session->save();
 
             return [
                 'message' => 'Successfully left session',

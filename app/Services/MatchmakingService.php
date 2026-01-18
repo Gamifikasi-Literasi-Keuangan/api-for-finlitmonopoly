@@ -83,7 +83,7 @@ class MatchmakingService
             'score' => 0,
             'player_order' => $newOrder,
             'connection_status' => 'connected',
-            'is_ready' => $isHost ? true : false,
+            'is_ready' => false,
             'joined_at' => now()
         ]);
 

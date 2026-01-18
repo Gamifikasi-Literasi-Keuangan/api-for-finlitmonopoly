@@ -74,10 +74,15 @@ class CardService
             $dicePreroll = null;
             $possibleTiles = null;
 
-            if ($card->action === 'roll_loss' || $card->action === 'random_choice') {
-                // Simulasi 3 kemungkinan hasil
-                $possibleTiles = ["Makan", "Transportasi", "Nongkrong"];
-                $dicePreroll = rand(0, 2);
+            // Jika kartu memiliki target_tile, siapkan data untuk client
+            if (!is_null($card->target_tile)) {
+                $targetTile = BoardTile::where('position_index', $card->target_tile)->first();
+                $possibleTiles = [$targetTile ? $targetTile->name : 'Unknown'];
+                $dicePreroll = 0; // Client akan ambil possible_tiles[0]
+            } elseif ($card->action === 'roll_loss' || $card->action === 'random_choice') {
+                // Jika action membutuhkan random choice
+                $possibleTiles = ["Makan", "Transport", "Nongkrong"];
+                $dicePreroll = rand(0, 2); // Server tentukan hasil random
             }
 
             // 6. Simpan Perubahan ke Database
@@ -131,7 +136,7 @@ class CardService
             $this->logCardHistory($playerId, $cardId, $change);
 
             // 7. Format Response
-            $response = [
+            return [
                 'card_category' => ucfirst($affectedCategoryKey),
                 'title' => $card->title,
                 'narration' => $card->narration,
@@ -141,17 +146,6 @@ class CardService
                 'dice_preroll_result' => $dicePreroll, // null jika tidak ada dadu
                 'possible_tiles' => $possibleTiles     // null jika tidak ada dadu
             ];
-            
-            // Tambahkan info target tile jika ada movement
-            if (!is_null($card->target_tile)) {
-                $targetTile = BoardTile::where('position_index', $card->target_tile)->first();
-                $response['movement'] = [
-                    'target_tile_id' => $card->target_tile,
-                    'target_tile_name' => $targetTile ? $targetTile->name : 'Unknown'
-                ];
-            }
-            
-            return $response;
         });
     }
 
@@ -221,16 +215,15 @@ class CardService
             $dicePreroll = null;
             $possibleTiles = null;
 
-            // Jika action membutuhkan pilihan acak atau lemparan dadu
-            if ($card->action === 'roll_gain' || $card->action === 'random_reward') {
-                // Contoh logika dinamis (bisa juga ambil dari linked_content di DB)
-                $possibleTiles = ["Bonus Kecil", "Bonus Besar", "Jackpot"];
-                $dicePreroll = rand(0, 2);
-            } else {
-                // Jika action standar (langsung dapat), possible_tiles bisa diisi info target
-                // Sesuai contoh request Anda: possible_tiles = ["Pendidikan"]
-                $possibleTiles = ["Start"];
-                $dicePreroll = 0; // Default index 0
+            // Jika kartu memiliki target_tile, siapkan data untuk client
+            if (!is_null($card->target_tile)) {
+                $targetTile = BoardTile::where('position_index', $card->target_tile)->first();
+                $possibleTiles = [$targetTile ? $targetTile->name : 'Unknown'];
+                $dicePreroll = 0; // Client akan ambil possible_tiles[0]
+            } elseif ($card->action === 'roll_gain' || $card->action === 'random_choice') {
+                // Jika action membutuhkan random choice
+                $possibleTiles = ["Makan", "Transport"];
+                $dicePreroll = rand(0, 1); // Server tentukan hasil random
             }
 
             // 6. Simpan Perubahan
@@ -284,7 +277,7 @@ class CardService
             $this->logCardHistory($playerId, $cardId, $change, 'risk_card');
 
             // 7. Format Response
-            $response = [
+            return [
                 'card_category' => ucfirst($affectedCategoryKey),
                 'title' => $card->title,
                 'narration' => $card->narration,
@@ -294,17 +287,6 @@ class CardService
                 'dice_preroll_result' => $dicePreroll,
                 'possible_tiles' => $possibleTiles
             ];
-            
-            // Tambahkan info target tile jika ada movement
-            if (!is_null($card->target_tile)) {
-                $targetTile = BoardTile::where('position_index', $card->target_tile)->first();
-                $response['movement'] = [
-                    'target_tile_id' => $card->target_tile,
-                    'target_tile_name' => $targetTile ? $targetTile->name : 'Unknown'
-                ];
-            }
-            
-            return $response;
         });
     }
 
