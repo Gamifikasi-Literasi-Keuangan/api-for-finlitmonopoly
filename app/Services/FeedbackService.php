@@ -11,10 +11,12 @@ use App\Repositories\InterventionRepository;
 class FeedbackService
 {
     protected $repo;
+    protected $sessionService;
 
-    public function __construct(InterventionRepository $repo)
+    public function __construct(InterventionRepository $repo, SessionService $sessionService)
     {
         $this->repo = $repo;
+        $this->sessionService = $sessionService;
     }
 
     /**
@@ -57,9 +59,12 @@ class FeedbackService
 
             // Checks untuk Level 4
             if ($interventionType === 'break') {
-                $heedMessage = "Selamat beristirahat! Kami akan tunggu.";
+                $heedMessage = "Investasi kecil yang dimulai lebih awal bisa menghasilkan lebih banyak dibanding investasi besar yang dimulai terlambat. Oleh karena itu, investasi sebaiknya selalu dikaitkan dengan tujuan jangka panjang seperti rumah, pendidikan, atau pensiun.";
                 if ($participation) {
                     $participation->update(['on_break' => true]);
+
+                    // Skip Turn (End Turn immediately)
+                    $this->sessionService->endTurn($playerId);
                 }
             } else {
                 $contentId = $data['scenario_id'] ?? null;
