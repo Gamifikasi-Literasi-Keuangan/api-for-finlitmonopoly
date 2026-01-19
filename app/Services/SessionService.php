@@ -218,15 +218,15 @@ class SessionService
             if ($currentPhase === 'resolving_event' && isset($gameState['current_turn_action'])) {
                 $turnAction = $gameState['current_turn_action'];
                 
-                // Phase transisi: client sudah tampilkan kartu, sekarang kembalikan ke rolling untuk melanjutkan
-                $gameState['turn_phase'] = 'rolling';
+                // Phase transisi: client sudah tampilkan kartu, sekarang ubah ke moving
+                $gameState['turn_phase'] = 'moving';
                 $gameState['last_dice'] = $turnAction['dice_value'] ?? 0; // null karena dari kartu
                 
                 $session->game_state = json_encode($gameState);
                 $session->save();
                 
                 return [
-                    'turn_phase' => 'rolling',
+                    'turn_phase' => 'moving',
                     'from_tile' => $turnAction['from_tile'],
                     'to_tile' => $turnAction['to_tile'],
                     'message' => 'Card movement applied. Position updated.'
