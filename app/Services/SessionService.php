@@ -44,7 +44,7 @@ class SessionService
         
         // Check timeout only for active sessions (not in lobby)
         if ($session->status === 'active') {
-            $this->checkAndDisconnectTimeoutPlayers($session->sessionId, 10);
+            $this->checkAndDisconnectTimeoutPlayers($session->sessionId, 40);
             
             // Reload participants setelah check timeout
             $session->load('participants');
@@ -568,7 +568,7 @@ class SessionService
     /**
      * Check dan auto-disconnect players yang timeout (tidak ping dalam X detik)
      */
-    private function checkAndDisconnectTimeoutPlayers(string $sessionId, int $timeoutSeconds = 10)
+    private function checkAndDisconnectTimeoutPlayers(string $sessionId, int $timeoutSeconds = 40)
     {
         $timeoutThreshold = now()->subSeconds($timeoutSeconds);
 
