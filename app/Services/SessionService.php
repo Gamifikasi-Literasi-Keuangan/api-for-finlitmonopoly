@@ -41,6 +41,13 @@ class SessionService
         }
 
         $session = $participation->session;
+        
+        // Check dan auto-disconnect players yang timeout
+        $this->checkAndDisconnectTimeoutPlayers($session->sessionId, 10);
+        
+        // Reload participants setelah check timeout
+        $session->load('participants');
+        
         $gameState = json_decode($session->game_state, true) ?? [];
         $turnPhase = $gameState['turn_phase'] ?? 'waiting';
 
@@ -536,5 +543,104 @@ class SessionService
         // Untuk saat ini kita biarkan logic di endTurn yang menangani skip.
 
         return ['status' => 'success', 'on_break' => $status];
+    }
+
+    /**
+     * Update ping timestamp untuk player
+     */
+    public function updatePing(string $playerId)
+    {
+        $participation = ParticipatesIn::where('playerId', $playerId)
+            ->whereHas('session', fn($q) => $q->whereIn('status', ['active', 'waiting']))
+            ->first();
+
+        if ($participation) {
+            $participation->last_ping_at = now();
+            
+            $participation->save();
+        }
+
+        return ['status' => 'ok'];
+    }
+
+    /**
+     * Check dan auto-disconnect players yang timeout (tidak ping dalam X detik)
+     */
+    private function checkAndDisconnectTimeoutPlayers(string $sessionId, int $timeoutSeconds = 10)
+    {
+        $timeoutThreshold = now()->subSeconds($timeoutSeconds);
+
+        $timedOutPlayers = ParticipatesIn::where('sessionId', $sessionId)
+            ->where('connection_status', 'connected')
+            ->where(function ($query) use ($timeoutThreshold) {
+                $query->where('last_ping_at', '<', $timeoutThreshold)
+                      ->orWhereNull('last_ping_at');
+            })
+            ->get();
+
+        if ($timedOutPlayers->isEmpty()) {
+            return 0;
+        }
+
+        $session = GameSession::find($sessionId);
+        $currentPlayerId = $session->current_player_id;
+        $currentPlayerTimedOut = false;
+
+        foreach ($timedOutPlayers as $player) {
+            $player->connection_status = 'disconnected';
+            $player->save();
+
+            // Check jika current player yang timeout
+            if ($player->playerId === $currentPlayerId) {
+                $currentPlayerTimedOut = true;
+            }
+        }
+
+        // Jika current player yang timeout, pass turn ke next connected player
+        if ($currentPlayerTimedOut && $session->status === 'active') {
+            $participants = ParticipatesIn::where('sessionId', $sessionId)
+                ->orderBy('player_order')
+                ->get();
+
+            $currentIndex = $participants->search(function ($p) use ($currentPlayerId) {
+                return $p->playerId === $currentPlayerId;
+            });
+
+            if ($currentIndex !== false) {
+                $totalPlayers = $participants->count();
+                $nextIndex = ($currentIndex + 1) % $totalPlayers;
+                $checkedCount = 0;
+                $foundNext = false;
+
+                // Find next connected and active player
+                do {
+                    $candidate = $participants[$nextIndex];
+
+                    if (!$candidate->on_break && $candidate->connection_status === 'connected') {
+                        $foundNext = true;
+                        break;
+                    }
+
+                    $nextIndex = ($nextIndex + 1) % $totalPlayers;
+                    $checkedCount++;
+
+                } while ($checkedCount < $totalPlayers);
+
+                // If found a valid next player, assign turn
+                if ($foundNext) {
+                    $nextPlayer = $participants[$nextIndex];
+                    $session->current_player_id = $nextPlayer->playerId;
+
+                    // Reset turn phase to waiting for the new player
+                    $gameState = json_decode($session->game_state, true) ?? [];
+                    $gameState['turn_phase'] = 'waiting';
+                    $gameState['last_dice'] = 0;
+                    $session->game_state = json_encode($gameState);
+                    $session->save();
+                }
+            }
+        }
+
+        return $timedOutPlayers->count();
     }
 }

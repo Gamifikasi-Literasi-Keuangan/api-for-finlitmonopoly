@@ -41,14 +41,32 @@ class SessionController extends Controller
     }
 
     /**
-     * Handle ping requests to check server status.
+     * Handle ping requests to update player activity timestamp.
      */
     public function ping(Request $request)
     {
-        return response()->json([
-            'status' => 'ok',
-            'server_time' => now()->toIso8601String()
-        ]);
+        $user = $request->user();
+        if (!$user || !$user->player) {
+            return response()->json([
+                'status' => 'ok',
+                'server_time' => now()->toIso8601String()
+            ]);
+        }
+
+        try {
+            $this->sessionService->updatePing($user->player->PlayerId);
+            
+            return response()->json([
+                'status' => 'ok',
+                'server_time' => now()->toIso8601String()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'ok',
+                'server_time' => now()->toIso8601String(),
+                'warning' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
