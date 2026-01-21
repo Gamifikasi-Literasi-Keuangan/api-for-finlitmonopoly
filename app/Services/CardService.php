@@ -75,15 +75,23 @@ class CardService
             $possibleTiles = null;
             $targetPosition = null; // Position to move player to
 
-            // Hanya kartu dengan target_tile yang menyebabkan pergerakan
+            // Jika kartu memiliki target_tile, siapkan data untuk client
             if (!is_null($card->target_tile)) {
                 $targetTile = BoardTile::where('position_index', $card->target_tile)->first();
                 $possibleTiles = [$targetTile ? $targetTile->name : 'Unknown'];
                 $dicePreroll = 0; // Client akan ambil possible_tiles[0]
                 $targetPosition = $card->target_tile;
+            } elseif ($card->action === 'roll_loss' || $card->action === 'random_choice') {
+                // Jika action membutuhkan random choice
+                $tileOptions = BoardTile::whereIn('name', ["Makan", "Transport", "Nongkrong"])->get();
+                $possibleTiles = $tileOptions->pluck('name')->toArray();
+                $dicePreroll = rand(0, count($possibleTiles) - 1); // Server tentukan hasil random
+                
+                // Get target position from selected tile
+                if (isset($tileOptions[$dicePreroll])) {
+                    $targetPosition = $tileOptions[$dicePreroll]->position_index;
+                }
             }
-            // Kartu dengan action 'random_choice' atau 'roll_loss' tidak menyebabkan pergerakan
-            // Hanya efek score change yang diterapkan
 
             // 6. Simpan Perubahan ke Database
             $currentScores[$targetScoreKey] = $newValue;
@@ -216,15 +224,23 @@ class CardService
             $possibleTiles = null;
             $targetPosition = null; // Position to move player to
 
-            // Hanya kartu dengan target_tile yang menyebabkan pergerakan
+            // Jika kartu memiliki target_tile, siapkan data untuk client
             if (!is_null($card->target_tile)) {
                 $targetTile = BoardTile::where('position_index', $card->target_tile)->first();
                 $possibleTiles = [$targetTile ? $targetTile->name : 'Unknown'];
                 $dicePreroll = 0; // Client akan ambil possible_tiles[0]
                 $targetPosition = $card->target_tile;
+            } elseif ($card->action === 'roll_gain' || $card->action === 'random_choice') {
+                // Jika action membutuhkan random choice
+                $tileOptions = BoardTile::whereIn('name', ["Makan", "Transport"])->get();
+                $possibleTiles = $tileOptions->pluck('name')->toArray();
+                $dicePreroll = rand(0, count($possibleTiles) - 1); // Server tentukan hasil random
+                
+                // Get target position from selected tile
+                if (isset($tileOptions[$dicePreroll])) {
+                    $targetPosition = $tileOptions[$dicePreroll]->position_index;
+                }
             }
-            // Kartu dengan action 'random_choice' atau 'roll_gain' tidak menyebabkan pergerakan
-            // Hanya efek score change yang diterapkan
 
             // 6. Simpan Perubahan
             $currentScores[$targetScoreKey] = $newValue;
