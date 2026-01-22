@@ -49,15 +49,15 @@ class SessionService
         }
 
         $session = $participation->session;
-        
+
         // Check timeout only for active sessions (not in lobby)
         if ($session->status === 'active') {
             $this->checkAndDisconnectTimeoutPlayers($session->sessionId, 40);
-            
+
             // Reload participants setelah check timeout
             $session->load('participants');
         }
-        
+
         $gameState = json_decode($session->game_state, true) ?? [];
         $turnPhase = $gameState['turn_phase'] ?? 'waiting';
 
@@ -234,14 +234,14 @@ class SessionService
             // Jika phase adalah resolving_event (dari card movement), gunakan data dari current_turn_action
             if ($currentPhase === 'resolving_event' && isset($gameState['current_turn_action'])) {
                 $turnAction = $gameState['current_turn_action'];
-                
+
                 // Phase transisi: client sudah tampilkan kartu, sekarang ubah ke moving
                 $gameState['turn_phase'] = 'moving';
                 $gameState['last_dice'] = $turnAction['dice_value'] ?? 0; // null karena dari kartu
-                
+
                 $session->game_state = json_encode($gameState);
                 $session->save();
-                
+
                 return [
                     'turn_phase' => 'moving',
                     'from_tile' => $turnAction['from_tile'],
@@ -481,7 +481,7 @@ class SessionService
             // If the leaving player is the current player, pass turn to next connected player
             if ($session->status === 'active' && $session->current_player_id === $playerId) {
                 $participants = $session->participants->sortBy('player_order')->values();
-                
+
                 $currentIndex = $participants->search(function ($p) use ($playerId) {
                     return $p->playerId === $playerId;
                 });
@@ -510,7 +510,7 @@ class SessionService
                     if ($foundNext) {
                         $nextPlayer = $participants[$nextIndex];
                         $session->current_player_id = $nextPlayer->playerId;
-                        
+
                         // Reset turn phase to waiting for the new player
                         $gameState = json_decode($session->game_state, true) ?? [];
                         $gameState['turn_phase'] = 'waiting';
@@ -528,7 +528,7 @@ class SessionService
             if ($remainingPlayers === 0) {
                 $session->status = 'completed';
             }
-            
+
             $session->save();
 
             return [
@@ -575,7 +575,7 @@ class SessionService
 
         if ($participation) {
             $participation->last_ping_at = now();
-            
+
             $participation->save();
         }
 
@@ -593,7 +593,7 @@ class SessionService
             ->where('connection_status', 'connected')
             ->where(function ($query) use ($timeoutThreshold) {
                 $query->where('last_ping_at', '<', $timeoutThreshold)
-                      ->orWhereNull('last_ping_at');
+                    ->orWhereNull('last_ping_at');
             })
             ->get();
 
@@ -671,5 +671,42 @@ class SessionService
         }
 
         return $timedOutPlayers->count();
+    }
+
+    /**
+     * Update ranks untuk semua pemain dalam sesi berdasarkan score
+     * Rank 1 = highest score, Rank N = lowest score
+     */
+    public function updateSessionRanks(string $sessionId): void
+    {
+        // Ambil semua partisipan di session, urutkan berdasarkan score DESC
+        $participants = ParticipatesIn::where('sessionId', $sessionId)
+            ->orderBy('score', 'desc')
+            ->get();
+
+        $currentRank = 1;
+        $previousScore = null;
+        $sameRankCount = 0;
+
+        foreach ($participants as $index => $participant) {
+            // Jika score sama dengan pemain sebelumnya, rank tetap sama
+            if ($previousScore !== null && $participant->score === $previousScore) {
+                $participant->rank = $currentRank;
+                $sameRankCount++;
+            } else {
+                // Score berbeda, rank naik (skip jika ada yang tied sebelumnya)
+                if ($sameRankCount > 0) {
+                    $currentRank += $sameRankCount + 1;
+                    $sameRankCount = 0;
+                } elseif ($previousScore !== null) {
+                    $currentRank++;
+                }
+
+                $participant->rank = $currentRank;
+            }
+
+            $previousScore = $participant->score;
+            $participant->save();
+        }
     }
 }

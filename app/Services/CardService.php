@@ -17,14 +17,20 @@ class CardService
 {
     protected $interventionService;
     protected $predictionService;
+    protected $scoringService;
+    protected $sessionService;
 
-    // Inject InterventionService and PredictionService via Constructor
+    // Inject InterventionService, PredictionService, ScoringService, and SessionService via Constructor
     public function __construct(
         InterventionService $interventionService,
-        PredictionService $predictionService
+        PredictionService $predictionService,
+        ScoringService $scoringService,
+        SessionService $sessionService
     ) {
         $this->interventionService = $interventionService;
         $this->predictionService = $predictionService;
+        $this->scoringService = $scoringService;
+        $this->sessionService = $sessionService;
     }
 
     /**
@@ -68,8 +74,18 @@ class CardService
                 $currentScores = json_decode($currentScores, true) ?? [];
             }
             $oldValue = $currentScores[$targetScoreKey] ?? 0;
-            $change = $card->scoreChange;
-            $newValue = max(0, $oldValue + $change);
+            $baseChange = $card->scoreChange;
+
+            // Apply weighted scoring
+            $actualScoreChange = $this->scoringService->calculateWeightedScore(
+                $oldValue,
+                $card->difficulty ?? 2, // Default to medium difficulty if not set
+                $baseChange
+            );
+
+            // Apply score change and clamp to 0-max range
+            $maxScore = $this->scoringService->getMaxScore();
+            $newValue = max(0, min($maxScore, $oldValue + $actualScoreChange));
 
             $dicePreroll = null;
             $possibleTiles = null;
@@ -86,7 +102,7 @@ class CardService
                 $tileOptions = BoardTile::whereIn('name', ["Makan", "Transport", "Nongkrong"])->get();
                 $possibleTiles = $tileOptions->pluck('name')->toArray();
                 $dicePreroll = rand(0, count($possibleTiles) - 1); // Server tentukan hasil random
-                
+
                 // Get target position from selected tile
                 if (isset($tileOptions[$dicePreroll])) {
                     $targetPosition = $tileOptions[$dicePreroll]->position_index;
@@ -95,7 +111,6 @@ class CardService
 
             // 6. Simpan Perubahan ke Database
             $currentScores[$targetScoreKey] = $newValue;
-            $profile->lifetime_scores = $currentScores;
             $profile->lifetime_scores = $currentScores;
             $profile->save();
 
@@ -113,11 +128,11 @@ class CardService
                 if (!is_null($targetPosition)) {
                     $oldPosition = $participation->position;
                     $newPosition = $targetPosition;
-                    
+
                     // Update posisi pemain
                     $participation->position = $newPosition;
                     $participation->save();
-                    
+
                     // Simpan detail pergerakan di game_state untuk referensi game client
                     $gameState['current_turn_action'] = [
                         'dice_value' => null, // Pergerakan dari kartu, bukan dadu
@@ -126,29 +141,37 @@ class CardService
                         'landed_event_type' => 'card_movement',
                         'landed_event_id' => $cardId
                     ];
-                    
+
                     // Set phase ke resolving_event agar client tahu harus tampilkan kartu dulu
                     $gameState['turn_phase'] = 'resolving_event';
                 } else {
                     // Kartu tanpa pergerakan, langsung selesai
                     $gameState['turn_phase'] = 'event_completed';
                 }
-                
+
                 unset($gameState['active_event']);
 
                 $session->game_state = json_encode($gameState);
                 $session->save();
+
+                // Accumulate score changes ke session score
+                $participation->score = ($participation->score ?? 0) + $actualScoreChange;
+                $participation->save();
+
+                // Update ranks untuk semua pemain dalam session
+                $this->sessionService->updateSessionRanks($participation->sessionId);
             }
 
             // (Opsional) Catat ke tabel player_decisions sebagai history
-            $this->logCardHistory($playerId, $cardId, $change);
+            $this->logCardHistory($playerId, $cardId, $actualScoreChange);
 
             // 7. Format Response
             return [
                 'card_category' => ucfirst($affectedCategoryKey),
                 'title' => $card->title,
                 'narration' => $card->narration,
-                'score_change' => $change,
+                // 'real_score' => $baseChange,
+                'score_change' => $actualScoreChange,
                 'affected_score' => $targetScoreKey,
                 'new_score_value' => $newValue,
                 'dice_preroll_result' => $dicePreroll, // null jika tidak ada dadu
@@ -216,8 +239,18 @@ class CardService
                 $currentScores = json_decode($currentScores, true) ?? [];
             }
             $oldValue = $currentScores[$targetScoreKey] ?? 0;
-            $change = $card->scoreChange; // Nilai dari DB (misal: +5)
-            $newValue = $oldValue + $change;
+            $baseChange = $card->scoreChange; // Nilai dari DB (misal: +5)
+
+            // Apply weighted scoring
+            $actualScoreChange = $this->scoringService->calculateWeightedScore(
+                $oldValue,
+                $card->difficulty ?? 2, // Default to medium difficulty if not set
+                $baseChange
+            );
+
+            // Apply score change and clamp to 0-max range
+            $maxScore = $this->scoringService->getMaxScore();
+            $newValue = max(0, min($maxScore, $oldValue + $actualScoreChange));
 
             // 5. Logika Preroll / Possible Tiles
             $dicePreroll = null;
@@ -235,7 +268,7 @@ class CardService
                 $tileOptions = BoardTile::whereIn('name', ["Makan", "Transport"])->get();
                 $possibleTiles = $tileOptions->pluck('name')->toArray();
                 $dicePreroll = rand(0, count($possibleTiles) - 1); // Server tentukan hasil random
-                
+
                 // Get target position from selected tile
                 if (isset($tileOptions[$dicePreroll])) {
                     $targetPosition = $tileOptions[$dicePreroll]->position_index;
@@ -244,7 +277,6 @@ class CardService
 
             // 6. Simpan Perubahan
             $currentScores[$targetScoreKey] = $newValue;
-            $profile->lifetime_scores = $currentScores;
             $profile->lifetime_scores = $currentScores;
             $profile->save();
 
@@ -262,11 +294,11 @@ class CardService
                 if (!is_null($targetPosition)) {
                     $oldPosition = $participation->position;
                     $newPosition = $targetPosition;
-                    
+
                     // Update posisi pemain
                     $participation->position = $newPosition;
                     $participation->save();
-                    
+
                     // Simpan detail pergerakan di game_state untuk referensi game client
                     $gameState['current_turn_action'] = [
                         'dice_value' => null, // Pergerakan dari kartu, bukan dadu
@@ -275,7 +307,7 @@ class CardService
                         'landed_event_type' => 'card_movement',
                         'landed_event_id' => $cardId
                     ];
-                    
+
                     // Set phase ke resolving_event agar client tahu harus tampilkan kartu dulu
                     $gameState['turn_phase'] = 'resolving_event';
                 } else {
@@ -287,17 +319,25 @@ class CardService
 
                 $session->game_state = json_encode($gameState);
                 $session->save();
+
+                // Accumulate score changes ke session score
+                $participation->score = ($participation->score ?? 0) + $actualScoreChange;
+                $participation->save();
+
+                // Update ranks untuk semua pemain dalam session
+                $this->sessionService->updateSessionRanks($participation->sessionId);
             }
 
             // Catat History
-            $this->logCardHistory($playerId, $cardId, $change, 'risk_card');
+            $this->logCardHistory($playerId, $cardId, $actualScoreChange, 'chance_card');
 
             // 7. Format Response
             return [
                 'card_category' => ucfirst($affectedCategoryKey),
                 'title' => $card->title,
                 'narration' => $card->narration,
-                'score_change' => $change,
+                // 'real_score' => $baseChange,
+                'score_change' => $actualScoreChange,
                 'affected_score' => $targetScoreKey,
                 'new_score_value' => $newValue,
                 'dice_preroll_result' => $dicePreroll,
@@ -385,16 +425,21 @@ class CardService
 
             $categoryLabel = $quiz->tags[0] ?? 'pendapatan';
 
-            // 5. Update Skor
+            // Update Skor dengan Weighted Scoring
             $currentScores = $profile->lifetime_scores ?? [];
             $oldVal = $currentScores[$categoryLabel] ?? 0;
-            $newVal = $oldVal + $scoreChange;
 
-            // Opsional: Cegah nilai negatif
-            // $newVal = max(0, $newVal); 
+            $actualScoreChange = $this->scoringService->calculateWeightedScore(
+                $oldVal,
+                $quiz->difficulty ?? 2, // Default Medium (2)
+                $scoreChange
+            );
+
+            // Apply score change and clamp to 0-max range
+            $maxScore = $this->scoringService->getMaxScore();
+            $newVal = max(0, min($maxScore, $oldVal + $actualScoreChange));
 
             $currentScores[$categoryLabel] = $newVal;
-            $profile->lifetime_scores = $currentScores;
             $profile->lifetime_scores = $currentScores;
             $profile->save();
 
@@ -413,10 +458,17 @@ class CardService
 
                 $session->game_state = json_encode($gameState);
                 $session->save();
+
+                // Accumulate score changes ke session score
+                $participation->score = ($participation->score ?? 0) + $actualScoreChange;
+                $participation->save();
+
+                // Update ranks untuk semua pemain dalam session
+                $this->sessionService->updateSessionRanks($participation->sessionId);
             }
 
             // 6. Catat History Keputusan
-            $this->logQuizDecision($playerId, $quizId, $selectedOption, $isCorrect, $scoreChange, $data['decision_time_seconds'] ?? 0);
+            $this->logQuizDecision($playerId, $quizId, $selectedOption, $isCorrect, $actualScoreChange, $data['decision_time_seconds'] ?? 0);
 
             // 7. Get real-time prediction after quiz answer
             $prediction = null;
@@ -432,7 +484,8 @@ class CardService
             // 8. Format Response
             $response = [
                 'correct' => $isCorrect,
-                'score_change' => $scoreChange,
+                // 'real_score' => $scoreChange,
+                'score_change' => $actualScoreChange,
                 'affected_score' => $categoryLabel,
                 'new_score_value' => $newVal
             ];

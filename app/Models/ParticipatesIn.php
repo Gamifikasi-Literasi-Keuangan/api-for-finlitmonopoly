@@ -10,7 +10,7 @@ class ParticipatesIn extends Model
     use HasFactory;
 
     protected $table = 'participatesin';
-    protected $fillable = ['sessionId', 'playerId', 'position', 'score', 'player_order', 'connection_status', 'is_ready', 'joined_at', 'on_break', 'last_break_end_at', 'last_ping_at'];
+    protected $fillable = ['sessionId', 'playerId', 'position', 'score', 'rank', 'player_order', 'connection_status', 'is_ready', 'joined_at', 'on_break', 'last_break_end_at'];
 
     public function player()
     {

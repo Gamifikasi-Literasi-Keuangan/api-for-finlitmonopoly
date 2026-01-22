@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Scenario;
 use App\Services\InterventionService;
 use App\Services\PredictionService;
+use App\Services\ScoringService;
 use App\Models\ScenarioOption;
 use App\Models\PlayerProfile;
 use App\Models\PlayerDecision;
@@ -16,13 +17,20 @@ class ScenarioService
 {
     protected $interventionService;
     protected $predictionService;
+    protected $scoringService;
+    protected $sessionService;
+
 
     public function __construct(
         InterventionService $interventionService,
-        PredictionService $predictionService
+        PredictionService $predictionService,
+        ScoringService $scoringService,
+        SessionService $sessionService
     ) {
         $this->interventionService = $interventionService;
         $this->predictionService = $predictionService;
+        $this->scoringService = $scoringService;
+        $this->sessionService = $sessionService;
     }
 
     /**
@@ -92,18 +100,42 @@ class ScenarioService
             $primaryAffected = 'general';
             $maxChangeVal = 0;
             $totalChange = 0;
+            $allScoreChanges = []; // Track semua perubahan kategori
 
-            foreach ($scoreChanges as $category => $change) {
+            $scenario = Scenario::find($scenarioId);
+            $scenarioDifficulty = $scenario->difficulty ?? 2;
+
+            foreach ($scoreChanges as $category => $baseChange) {
+
                 $oldVal = $currentScores[$category] ?? 0;
-                $newVal = $oldVal + $change;
-                $currentScores[$category] = max(0, $newVal);
 
-                if (abs($change) >= abs($maxChangeVal)) {
-                    $maxChangeVal = $change;
+                // Menerapkan Perhitungan Pembobotan
+                $actualChange = $this->scoringService->calculateWeightedScore(
+                    $oldVal,
+                    $scenarioDifficulty,
+                    $baseChange
+                );
+
+                // Clamp ke 0-max range
+                $maxScore = $this->scoringService->getMaxScore();
+                $newVal = max(0, min($maxScore, $oldVal + $actualChange));
+                $currentScores[$category] = $newVal;
+
+                // Track semua perubahan kategori
+                $allScoreChanges[$category] = [
+                    'base' => $baseChange,
+                    'actual' => $actualChange,
+                    'old' => $oldVal,
+                    'new' => $newVal
+                ];
+
+                // Tentukan affected utama
+                if (abs($actualChange) >= abs($maxChangeVal)) {
+                    $maxChangeVal = $actualChange;
                     $primaryAffected = $category;
                 }
 
-                $totalChange += $change;
+                $totalChange += $actualChange;
             }
 
             $profile->lifetime_scores = $currentScores;
@@ -126,6 +158,13 @@ class ScenarioService
 
                 $session->game_state = json_encode($gameState);
                 $session->save();
+
+                // Accumulate score changes ke session score
+                $participation->score = ($participation->score ?? 0) + $totalChange;
+                $participation->save();
+
+                // Update ranks untuk semua pemain dalam session
+                $this->sessionService->updateSessionRanks($participation->sessionId);
             }
 
             $sessionId = $participation ? $participation->sessionId : null;
@@ -161,6 +200,7 @@ class ScenarioService
                 'score_change' => $maxChangeVal,
                 'affected_score' => $primaryAffected,
                 'new_score_value' => $currentScores[$primaryAffected] ?? 0,
+                // 'all_score_changes' => $allScoreChanges, // Detail semua kategori
                 'response' => $option->response
             ];
 
