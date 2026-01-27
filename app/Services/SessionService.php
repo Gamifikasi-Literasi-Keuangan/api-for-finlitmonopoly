@@ -584,8 +584,9 @@ class SessionService
 
     /**
      * Check dan auto-disconnect players yang timeout (tidak ping dalam X detik)
+     * Public method agar bisa dipanggil dari service lain (e.g., MatchmakingService)
      */
-    private function checkAndDisconnectTimeoutPlayers(string $sessionId, int $timeoutSeconds = 40)
+    public function checkAndDisconnectTimeoutPlayers(string $sessionId, int $timeoutSeconds = 40)
     {
         $timeoutThreshold = now()->subSeconds($timeoutSeconds);
 

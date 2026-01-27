@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 class MatchmakingService
 {
+    protected $sessionService;
+
+    public function __construct(SessionService $sessionService)
+    {
+        $this->sessionService = $sessionService;
+    }
+
     /**
      * Memasukkan pemain ke dalam antrean matchmaking berbasis sesi.
      */
@@ -165,7 +172,16 @@ class MatchmakingService
             return ['error' => 'Player is not in any active lobby/session'];
         }
 
-        $session = GameSession::with('participants')->find($participation->sessionId);
+        $sessionId = $participation->sessionId;
+
+        // Check timeout untuk players di lobby (waiting status)
+        $session = GameSession::find($sessionId);
+        if ($session && $session->status === 'waiting') {
+            $this->sessionService->checkAndDisconnectTimeoutPlayers($sessionId, 40);
+        }
+
+        // Reload session with fresh participants data after timeout check
+        $session = GameSession::with('participants')->find($sessionId);
 
         $totalPlayers = $session->participants->count();
         $readyCount = $session->participants->where('is_ready', true)->count();
